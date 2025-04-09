@@ -4,9 +4,7 @@ import multer from 'multer'
 import dotenv from 'dotenv'
 dotenv.config();
 
-/* import { router as lugares } from './routes/lugares.js'
-import { router as comentarios } from './routes/comentarios.js'
-import { router as login } from './routes/login.js' */
+import { router as usuarios } from './routes/usuarios.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,9 +14,7 @@ app.use(multer().array());
 app.use(express.json());
 
 // Rutas
-/* app.use('/api/lugares', lugares);
-app.use('/api/comentarios', comentarios);
-app.use('/api/login', login); */
+app.use('/api/usuarios', usuarios);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
