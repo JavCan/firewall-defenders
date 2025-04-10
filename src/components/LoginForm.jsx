@@ -1,3 +1,4 @@
+// Add this import at the top with other imports
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -5,6 +6,7 @@ import * as yup from 'yup';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 import '../styles/variables.css';
+import aulifyLogo from '../assets/aulify.png';
 
 const schema = yup.object().shape({
   identifier: yup.string().required('Correo electrónico o Usuario es requerido'),
@@ -47,10 +49,15 @@ const FormContainer = styled(motion.div)`
 
 const Logo = styled.div`
   text-align: left;
+  img {
+    max-width: 200px;
+    height: auto;
+    object-fit: contain;
+  }
   color: white;
   font-size: 2.5rem;
   font-weight: bold;
-`;
+`; // Fixed missing backtick and extra closing brace
 
 const FormSection = styled.div`
   background: #FFB800;
@@ -130,7 +137,7 @@ export default function LoginForm() {
   return (
     <FormContainer>
       <Logo>
-        aulify.
+        <img src={aulifyLogo} alt="Aulify Logo" />
       </Logo>
       
       <FormSection>

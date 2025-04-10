@@ -1,0 +1,130 @@
+.form-container {
+  background: rgba(30, 30, 63, 0.85);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: auto;
+  margin: 0 auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  position: relative;
+  backdrop-filter: blur(10px);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2rem;
+  align-items: center;
+  z-index: 1;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-container::-webkit-scrollbar {
+  display: none;
+}
+
+.form-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.logo-wrapper {
+  text-align: left;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.form-section {
+  background: #FFB800;
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-lg);
+  transition: transform 0.2s ease;
+}
+
+.form-section:hover {
+  transform: scale(1.01);
+}
+
+.form-section h2 {
+  color: #1E1E3F;
+  margin-bottom: var(--spacing-lg);
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--spacing-md);
+  margin: var(--spacing-xs) 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-sm);
+  background: white;
+  color: #1E1E3F;
+  font-family: var(--font-family);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input::placeholder {
+  color: #666;
+  opacity: 0.8;
+}
+
+.form-input:hover {
+  border-color: rgba(2, 190, 239, 0.5);
+  box-shadow: 0 2px 8px rgba(2, 190, 239, 0.1);
+}
+
+.form-input:focus {
+  border-color: #02BEEF;
+  box-shadow: 0 2px 12px rgba(2, 190, 239, 0.2);
+  outline: none;
+}
+
+.guest-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.small-text {
+  color: #1E1E3F;
+  font-size: 0.8rem;
+  margin-top: var(--spacing-md);
+  opacity: 0.8;
+}
+
+.error-message {
+  color: #ff0000;
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+  display: block;
+}
+
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+/* Remove duplicate .form-container definition and update the existing one */
+.form-container {
+  background: rgba(30, 30, 63, 0.85);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  width: 100%;
+  max-width: 800px;
+  margin: 2rem auto;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(10px);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2rem;
+  align-items: center;
+  z-index: 100; /* Increased z-index to ensure form appears above particles */
+  position: relative; /* Changed from fixed to relative for better positioning */
+  transform: none; /* Remove transform that might cause issues */
+  margin: auto; /* Center the form */
+}
