@@ -17,7 +17,7 @@ const FormContainer = styled(motion.div)`
   font-family: var(--font-body);
   background: rgba(30, 30, 63, 0.47); // More transparent
   border-radius: var(--border-radius-lg);
-  border: 1px solid rgb(30, 30, 63, 0.5);
+  border: 2px solid rgb(30, 30, 63, 0.5);
   padding: var(--spacing-xl);
   width: 100%;
   max-width: 600px; // Reduced from 800px
@@ -59,9 +59,10 @@ const Logo = styled.div`
 `; // Fixed missing backtick and extra closing brace
 
 const FormSection = styled.div`
-  background: #FFB800;
+  background:rgb(249, 182, 13);
   padding: var(--spacing-xl);
   border-radius: var(--border-radius-lg);
+  border: 2px solid rgb(200, 143, 0);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   
   &:hover {
