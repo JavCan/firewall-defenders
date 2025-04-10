@@ -1,3 +1,17 @@
+@font-face {
+  font-family: 'Montserrat-SemiBold';
+  src: url('../assets/Font/Montserrat-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Montserrat-Regular';
+  src: url('../assets/Font/Montserrat-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
 :root {
   /* Colors */
   --primary-blue: #02BEEF;
@@ -29,7 +43,9 @@
   --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   
   /* Typography */
-  --font-family: 'Segoe UI', system-ui, sans-serif;
+  --font-heading: 'Montserrat-Regular', sans-serif;
+  --font-label: 'Montserrat-Regular', sans-serif;
+  --font-body: 'Montserrat-Light', sans-serif;
   --font-size-sm: 0.8rem;
   --font-size-md: 1rem;
   

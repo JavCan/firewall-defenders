@@ -14,8 +14,10 @@ const schema = yup.object().shape({
 });
 
 const FormContainer = styled(motion.div)`
-  background: rgba(30, 30, 63, 0.85); // More transparent
+  font-family: var(--font-body);
+  background: rgba(30, 30, 63, 0.47); // More transparent
   border-radius: var(--border-radius-lg);
+  border: 1px solid rgb(30, 30, 63, 0.5);
   padding: var(--spacing-xl);
   width: 100%;
   max-width: 600px; // Reduced from 800px
@@ -60,16 +62,24 @@ const FormSection = styled.div`
   background: #FFB800;
   padding: var(--spacing-xl);
   border-radius: var(--border-radius-lg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
   
   h2 {
+    font-family: /Users/javiercanellaramos/firewall-defenders/src/assets/Font/Montserrat-SemiBold.ttf;
     color: #1E1E3F;
     margin-bottom: 1rem;
     font-size: 2.5rem;
-    font-weight: bold;
+    font-weight: 600;
     text-align: left;
   }
 
   label {
+    font-family: /Users/javiercanellaramos/firewall-defenders/src/assets/Font/Montserrat-Regular.ttf;
     display: block;
     color: #1E1E3F;
     margin-bottom: var(--spacing-xs);
@@ -77,17 +87,12 @@ const FormSection = styled.div`
     text-align: left;
     padding: 0.3rem 0;
   }
-
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: scale(1.01);
-  }
 `;
 
 const SmallText = styled.div`
   color: #1E1E3F;
   font-size: 1rem;
+  font-weight: 300; // Adjusted to match image
   margin-top: var(--spacing-lg);
   opacity: 0.8;
   text-align: left;
@@ -96,6 +101,7 @@ const SmallText = styled.div`
     color: #D44D56;
     margin-left: var(--spacing-xs);
     text-decoration: none;
+    font-weight: 400; // Adjusted to match image
     
     &:hover {
       text-decoration: underline;
@@ -104,6 +110,7 @@ const SmallText = styled.div`
 `;
 
 const Input = styled.input`
+  font-family: var(--font-body);
   width: 100%;
   padding: var(--spacing-md);
   margin: .1rem 0;
@@ -132,6 +139,7 @@ const Input = styled.input`
 `;
 
 const ErrorMessage = styled.span`
+  font-family: var(--font-body);
   color: #ff0000;
   font-size: var(--font-size-sm);
   margin-top: var(--spacing-xs);
