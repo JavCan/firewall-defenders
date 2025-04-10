@@ -1,0 +1,41 @@
+:root {
+  /* Colors */
+  --primary-blue: #02BEEF;
+  --dark-blue: #2A2353;
+  --error-red: #ff4444;
+  --white: #ffffff;
+  
+  /* Gradients */
+  --background-gradient: linear-gradient(to bottom, var(--primary-blue), var(--dark-blue));
+  --button-gradient: linear-gradient(45deg, var(--primary-blue), var(--dark-blue));
+  
+  /* Transparencies */
+  --glass-background: rgba(255, 255, 255, 0.1);
+  --input-border: rgba(255, 255, 255, 0.2);
+  --input-background: rgba(255, 255, 255, 0.05);
+  
+  /* Spacing */
+  --spacing-xs: 0.2rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.8rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 2rem;
+  
+  /* Border Radius */
+  --border-radius-sm: 0.5rem;
+  --border-radius-lg: 1rem;
+  
+  /* Shadows */
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+  /* Typography */
+  --font-family: 'Segoe UI', system-ui, sans-serif;
+  --font-size-sm: 0.8rem;
+  --font-size-md: 1rem;
+  
+  /* Transitions */
+  --transition-default: all 0.3s ease;
+  
+  /* Layout */
+  --form-max-width: 400px;
+}
