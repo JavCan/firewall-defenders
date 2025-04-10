@@ -63,7 +63,7 @@ const FormSection = styled.div`
   
   h2 {
     color: #1E1E3F;
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: 1rem;
     font-size: 2.5rem;
     font-weight: bold;
     text-align: left;
@@ -75,6 +75,7 @@ const FormSection = styled.div`
     margin-bottom: var(--spacing-xs);
     font-size: 1rem;
     text-align: left;
+    padding: 0.3rem 0;
   }
 
   transition: transform 0.2s ease;
@@ -105,7 +106,7 @@ const SmallText = styled.div`
 const Input = styled.input`
   width: 100%;
   padding: var(--spacing-md);
-  margin: var(--spacing-xs) 0;
+  margin: .1rem 0;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: var(--border-radius-sm);
   background: white;
