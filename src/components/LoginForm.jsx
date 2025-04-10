@@ -63,14 +63,42 @@ const FormSection = styled.div`
   
   h2 {
     color: #1E1E3F;
-    margin-bottom: var(--spacing-lg);
-    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xl);
+    font-size: 2.5rem;
     font-weight: bold;
+    text-align: left;
   }
+
+  label {
+    display: block;
+    color: #1E1E3F;
+    margin-bottom: var(--spacing-xs);
+    font-size: 1rem;
+    text-align: left;
+  }
+
   transition: transform 0.2s ease;
 
   &:hover {
     transform: scale(1.01);
+  }
+`;
+
+const SmallText = styled.div`
+  color: #1E1E3F;
+  font-size: 1rem;
+  margin-top: var(--spacing-lg);
+  opacity: 0.8;
+  text-align: left;
+
+  a {
+    color: #D44D56;
+    margin-left: var(--spacing-xs);
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
   }
 `;
 
@@ -102,19 +130,6 @@ const Input = styled.input`
   }
 `;
 
-const GuestGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
-`;
-
-const SmallText = styled.div`
-  color: #1E1E3F;
-  font-size: 0.8rem;
-  margin-top: var(--spacing-md);
-  opacity: 0.8;
-`;
-
 const ErrorMessage = styled.span`
   color: #ff0000;
   font-size: var(--font-size-sm);
@@ -140,18 +155,28 @@ export default function LoginForm() {
       <FormSection>
         <h2>Inicia sesión</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
+          <label>Correo electrónico o Usuario</label>
           <Input
             {...register('identifier')}
-            placeholder="Correo electrónico o Usuario"
+            placeholder="Escribe tu correo o Usuario..."
             type="text"
           />
+          {errors.identifier && (
+            <ErrorMessage>{errors.identifier.message}</ErrorMessage>
+          )}
+          
+          <label>Contraseña</label>
           <Input
             {...register('password')}
-            placeholder="Contraseña"
+            placeholder="Escribe tu contraseña..."
             type="password"
           />
+          {errors.password && (
+            <ErrorMessage>{errors.password.message}</ErrorMessage>
+          )}
+          
           <SmallText>
-            ¿No eres usuario de Aulify? <a href="#">Únete</a>
+            ¿No eres usuario de Aulify?<a href="#">Únete</a>
           </SmallText>
         </form>
       </FormSection>
