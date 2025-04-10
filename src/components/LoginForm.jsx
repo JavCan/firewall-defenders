@@ -11,9 +11,6 @@ import aulifyLogo from '../assets/aulify.png';
 const schema = yup.object().shape({
   identifier: yup.string().required('Correo electrónico o Usuario es requerido'),
   password: yup.string().required('Contraseña es requerida'),
-  guestName: yup.string(),
-  guestLastName: yup.string(),
-  guestUsername: yup.string(),
 });
 
 const FormContainer = styled(motion.div)`
@@ -21,7 +18,7 @@ const FormContainer = styled(motion.div)`
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-xl);
   width: 100%;
-  max-width: 800px; // Increased to accommodate side-by-side layout
+  max-width: 600px; // Reduced from 800px
   max-height: 90vh; /* Ensure form doesn't exceed viewport height */
   overflow: auto; /* Allow scrolling within form if needed */
   margin: 0 auto; /* Changed from margin: 2rem auto */
@@ -88,7 +85,7 @@ const Input = styled.input`
   font-family: var(--font-family);
 
   &::placeholder {
-    color: #666;
+    color: #D44D56;
     opacity: 0.8;
   }
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -155,25 +152,6 @@ export default function LoginForm() {
           />
           <SmallText>
             ¿No eres usuario de Aulify? <a href="#">Únete</a>
-          </SmallText>
-          
-          <h2 style={{ marginTop: '2rem' }}>Accede como invitad@</h2>
-          <GuestGrid>
-            <Input
-              placeholder="Nombre"
-              type="text"
-            />
-            <Input
-              placeholder="Apellidos"
-              type="text"
-            />
-          </GuestGrid>
-          <Input
-            placeholder="Usuario"
-            type="text"
-          />
-          <SmallText>
-            Si accedes como invitad@ no podrás guardar tu progreso
           </SmallText>
         </form>
       </FormSection>
