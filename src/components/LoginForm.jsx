@@ -17,7 +17,7 @@ const FormContainer = styled(motion.div)`
   font-family: var(--font-body);
   background: rgba(30, 30, 63, 0.47); // More transparent
   border-radius: var(--border-radius-lg);
-  border: 2px solid rgb(30, 30, 63, 0.5);
+  border: .5px solid rgba(255, 255, 255, 0.5);
   padding: var(--spacing-xl);
   width: 100%;
   max-width: 600px; // Reduced from 800px
@@ -62,7 +62,7 @@ const FormSection = styled.div`
   background:rgb(249, 182, 13);
   padding: var(--spacing-xl);
   border-radius: var(--border-radius-lg);
-  border: 2px solid rgb(200, 143, 0);
+  border: .5px solid rgba(255, 255, 255, 0.5);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   
   &:hover {
