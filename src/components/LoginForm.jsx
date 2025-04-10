@@ -15,7 +15,7 @@ const schema = yup.object().shape({
 
 const FormContainer = styled(motion.div)`
   font-family: var(--font-body);
-  background: rgba(30, 30, 63, 0.47); // More transparent
+  background: rgba(30, 30, 63, 0.3); // More transparent
   border-radius: var(--border-radius-lg);
   border: .5px solid rgba(255, 255, 255, 0.5);
   padding: var(--spacing-xl);
@@ -73,7 +73,7 @@ const FormSection = styled.div`
   h2 {
     font-family: /Users/javiercanellaramos/firewall-defenders/src/assets/Font/Montserrat-SemiBold.ttf;
     color: #1E1E3F;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     font-size: 2.5rem;
     font-weight: 600;
     text-align: left;
@@ -84,17 +84,19 @@ const FormSection = styled.div`
     display: block;
     color: #1E1E3F;
     margin-bottom: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
     font-size: 1rem;
     text-align: left;
     padding: 0.3rem 0;
   }
 `;
 
+// Update the SmallText component to be used inside the form
 const SmallText = styled.div`
   color: #1E1E3F;
   font-size: 1rem;
-  font-weight: 300; // Adjusted to match image
-  margin-top: var(--spacing-lg);
+  font-weight: 300;
+  margin-bottom: 1.5rem;
   opacity: 0.8;
   text-align: left;
 
@@ -102,7 +104,7 @@ const SmallText = styled.div`
     color: #D44D56;
     margin-left: var(--spacing-xs);
     text-decoration: none;
-    font-weight: 400; // Adjusted to match image
+    font-weight: 400;
     
     &:hover {
       text-decoration: underline;
@@ -139,12 +141,79 @@ const Input = styled.input`
   }
 `;
 
+// Update the ErrorMessage component to be a popup
 const ErrorMessage = styled.span`
   font-family: var(--font-body);
   color: #ff0000;
   font-size: var(--font-size-sm);
   margin-top: var(--spacing-xs);
-  display: block;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  
+  &::before {
+    content: "!";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    font-weight: bold;
+  }
+`;
+
+// Add a wrapper for inputs to position error messages properly
+const InputWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
+`;
+
+// Add this new styled component for the button
+const Button = styled.button`
+  background: #1E1E3F;
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 120px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  
+  &:hover {
+    background: #2a2a57;
+    transform: translateY(-2px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+// Add this new styled component for text outside the form
+const OutsideText = styled.div`
+  color: white;
+  font-size: 1rem;
+  font-weight: 300;
+  margin-top: 1.5rem;
+  text-align: center;
+  grid-column: 1 / -1;
+  
+  a {
+    color: #FFB800;
+    margin-left: var(--spacing-xs);
+    text-decoration: none;
+    font-weight: 400;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 export default function LoginForm() {
@@ -164,6 +233,9 @@ export default function LoginForm() {
       
       <FormSection>
         <h2>Inicia sesión</h2>
+        <SmallText>
+          ¿No eres usuario de Aulify?<a href="#">Únete→</a>
+        </SmallText>
         <form onSubmit={handleSubmit(onSubmit)}>
           <label>Correo electrónico o Usuario</label>
           <Input
@@ -185,9 +257,9 @@ export default function LoginForm() {
             <ErrorMessage>{errors.password.message}</ErrorMessage>
           )}
           
-          <SmallText>
-            ¿No eres usuario de Aulify?<a href="#">Únete</a>
-          </SmallText>
+          <Button type="submit">
+            Enter <span>→</span>
+          </Button>
         </form>
       </FormSection>
     </FormContainer>
