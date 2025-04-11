@@ -49,7 +49,7 @@ const FormContainer = styled(motion.div)`
 const Logo = styled.div`
   text-align: left;
   img {
-    max-width: 200px;
+    max-width: 130px;
     height: auto;
     object-fit: contain;
   }
