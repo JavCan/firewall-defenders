@@ -217,13 +217,18 @@ const OutsideText = styled.div`
   }
 `;
 
-export default function LoginForm() {
+// Update the LoginForm component to accept onLogin prop
+export default function LoginForm({ onLogin }) {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
 
   const onSubmit = (data) => {
     console.log(data);
+    // Call the onLogin function passed from the parent component
+    if (onLogin) {
+      onLogin(data);
+    }
   };
 
   return (
