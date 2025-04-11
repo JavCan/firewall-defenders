@@ -25,11 +25,11 @@ a:hover {
 body {
   margin: 0;
   height: 100vh;
-  background: linear-gradient(180deg, #00ccff 0%, #3e3379 100%); /* Darker gradient */
+  background: linear-gradient(180deg, #00ccff 0%, #1E193A 97%); /* Darker gradient */
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Montserrat', system-ui, sans-serif;
   overflow: hidden;
 }
 

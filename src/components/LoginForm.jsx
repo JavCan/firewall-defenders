@@ -15,7 +15,7 @@ const schema = yup.object().shape({
 
 const FormContainer = styled(motion.div)`
   font-family: var(--font-body);
-  background: rgba(30, 30, 63, 0.3); // More transparent
+  background: rgba(255, 255, 255, 0.3); // More transparent
   border-radius: var(--border-radius-lg);
   border: .5px solid rgba(255, 255, 255, 0.5);
   padding: var(--spacing-xl);
@@ -71,7 +71,7 @@ const FormSection = styled.div`
   }
   
   h2 {
-    font-family: /Users/javiercanellaramos/firewall-defenders/src/assets/Font/Montserrat-SemiBold.ttf;
+    font-family: ../assets/Font/Montserrat-SemiBold.ttf;
     color: #1E1E3F;
     margin-bottom: 0.5rem;
     font-size: 2.5rem;
@@ -80,7 +80,7 @@ const FormSection = styled.div`
   }
 
   label {
-    font-family: /Users/javiercanellaramos/firewall-defenders/src/assets/Font/Montserrat-Regular.ttf;
+    font-family: ../assets/Font/Montserrat-Regular.ttf;
     display: block;
     color: #1E1E3F;
     margin-bottom: var(--spacing-xs);
@@ -93,9 +93,10 @@ const FormSection = styled.div`
 
 // Update the SmallText component to be used inside the form
 const SmallText = styled.div`
+  font-family: ../assets/Font/Montserrat-Light.ttf;
   color: #1E1E3F;
   font-size: 1rem;
-  font-weight: 300;
+  font-weight: 100;
   margin-bottom: 1.5rem;
   opacity: 0.8;
   text-align: left;
