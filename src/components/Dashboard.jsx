@@ -2,6 +2,9 @@ import React from 'react'
 import styled from '@emotion/styled'
 import { motion } from 'framer-motion'
 import Topbar from './Topbar'
+import GameTimeCard from './GameTimeCard'
+import ProgressCard from './ProgressCard'
+import StickerGallery from './StickerGallery'
 import { FaBookmark, FaCalendarAlt, FaCog } from 'react-icons/fa'
 
 const DashboardContainer = styled.div`
@@ -20,6 +23,7 @@ const ContentContainer = styled(motion.div)`
   display: flex;
   width: 100%;
   max-width: 100%;
+  
 `
 
 const Sidebar = styled.div`
@@ -61,15 +65,16 @@ const SidebarIcon = styled.div`
 
 const MainContentWrapper = styled.div`
   flex: 1;
-  padding: 24px 32px;
+  padding: 10px .5rem;
 `
 
 const MainContent = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: auto auto;
   gap: 24px;
   width: 100%;
-  
+  height: 12px .5rem;
   @media (max-width: 1200px) {
     grid-template-columns: 1fr;
   }
@@ -98,8 +103,9 @@ const Dashboard = ({ user }) => {
         
         <MainContentWrapper>
           <MainContent>
-            {/* Dashboard content will be added here */}
-            {/* This is where we'll add components like GameTimeCard, ProgressCard, StickersCard, etc. */}
+            <GameTimeCard />
+            <StickerGallery />
+            <ProgressCard />
           </MainContent>
         </MainContentWrapper>
       </ContentContainer>
