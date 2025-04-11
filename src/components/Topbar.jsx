@@ -9,7 +9,7 @@ const TopbarContainer = styled(motion.header)`
   justify-content: space-between;
   background: rgba(30, 30, 63, 0.8);
   backdrop-filter: blur(10px);
-  padding: 12px 0 12px 0;
+  padding: 12px .5rem;
   width: 100%;
   position: relative;
   z-index: 100;

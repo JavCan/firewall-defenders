@@ -5,14 +5,14 @@ import Topbar from './Topbar'
 import { FaBookmark, FaCalendarAlt, FaCog } from 'react-icons/fa'
 
 const DashboardContainer = styled.div`
-  min-height: 100vh; /* Changed from 100% to 100vh */
   width: 100%;
-  background: linear-gradient(135deg, #1E1E3F 0%, #2D2D67 100%);
+  height: 85vh;
+  margin-top: 3.7rem;
+  border-radius: 30px;
+  background-color:rgba(255, 255, 255, 0.26);
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
-  padding: 0; /* Ensure no padding */
-  margin: 0; /* Ensure no margin */
 `
 
 const ContentContainer = styled(motion.div)`
@@ -25,14 +25,15 @@ const ContentContainer = styled(motion.div)`
 const Sidebar = styled.div`
   background: rgba(30, 30, 63, 0.8);
   backdrop-filter: blur(10px);
-  border-radius: 0 16px 16px 0;
+  border-radius: 24px;
+  margin: .5rem .6rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 0;
+  padding: 16px 0;
   gap: 20px;
   width: 70px;
-  height: calc(100vh - 72px);
+  height: 76.3vh;
   
   @media (max-width: 768px) {
     display: none;
