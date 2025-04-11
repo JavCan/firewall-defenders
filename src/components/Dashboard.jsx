@@ -12,6 +12,7 @@ const DashboardContainer = styled.div`
   height: 85vh;
   margin-top: 3.7rem;
   border-radius: 30px;
+  border: .5px solid rgba(255, 255, 255, 0.5);
   background-color:rgba(255, 255, 255, 0.26);
   display: flex;
   flex-direction: column;
