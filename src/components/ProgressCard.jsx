@@ -20,40 +20,46 @@ const ProgressCard = () => {
     <div className="progress-card-container">
       <h2 className="progress-title">Progreso</h2>
       
-      <div className="chart-container">
-        <div className="chart">
-          {chartData.map((item, index) => (
-            <div 
-              key={index}
-              className="chart-bar"
-              style={{ 
-                height: `${item.value}%`,
-                backgroundColor: `rgba(2, 190, 239, ${0.5 + (item.value / 200)})`
-              }}
-            />
-          ))}
+      <div className="content-wrapper">
+        <div className="chart-container">
+          <div className="chart-axes">
+            <div className="y-axis"></div>
+            <div className="x-axis"></div>
+          </div>
+          <div className="chart">
+            {chartData.map((item, index) => (
+              <div 
+                key={index}
+                className="chart-bar"
+                style={{ 
+                  height: `${item.value}%`,
+                  backgroundColor: `rgba(2, 190, 239, ${0.7 + (item.value / 200)})`
+                }}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-      
-      <div className="button-group">
-        <button 
-          className={`filter-button ${activeFilter === 'niveles' ? 'active' : ''}`}
-          onClick={() => setActiveFilter('niveles')}
-        >
-          <FaChevronLeft /> Niveles
-        </button>
-        <button 
-          className={`filter-button ${activeFilter === 'torretas' ? 'active' : ''}`}
-          onClick={() => setActiveFilter('torretas')}
-        >
-          <FaChevronLeft /> Torretas
-        </button>
-        <button 
-          className={`filter-button ${activeFilter === 'mejoras' ? 'active' : ''}`}
-          onClick={() => setActiveFilter('mejoras')}
-        >
-          <FaChevronLeft /> Mejoras
-        </button>
+        
+        <div className="button-group">
+          <button 
+            className={`filter-button ${activeFilter === 'niveles' ? 'active' : ''}`}
+            onClick={() => setActiveFilter('niveles')}
+          >
+            <FaChevronLeft /> Niveles
+          </button>
+          <button 
+            className={`filter-button ${activeFilter === 'torretas' ? 'active' : ''}`}
+            onClick={() => setActiveFilter('torretas')}
+          >
+            <FaChevronLeft /> Torretas
+          </button>
+          <button 
+            className={`filter-button ${activeFilter === 'mejoras' ? 'active' : ''}`}
+            onClick={() => setActiveFilter('mejoras')}
+          >
+            <FaChevronLeft /> Mejoras
+          </button>
+        </div>
       </div>
     </div>
   )

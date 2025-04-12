@@ -1,5 +1,5 @@
 .progress-card-container {
-  background: linear-gradient(135deg, #4481eb, #04befe);
+  background: linear-gradient(75deg, #3a7bd5bd, #6d5b98bd);
   border-radius: 24px;
   padding: 16px;
   width: 100%;
@@ -11,11 +11,49 @@
   min-height: 100%;
 }
 
+.progress-title {
+  font-size: 2rem;
+  color: white;
+  margin: 0 0 16px 0;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
 .chart-container {
   flex: 1;
-  margin-bottom: 12px;
   position: relative;
-  min-height: 100px;
+  min-height: 150px;
+}
+
+.chart-axes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.y-axis {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background-color: #02BEEF;
+}
+
+.x-axis {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background-color: #02BEEF;
 }
 
 .chart {
@@ -24,7 +62,9 @@
   height: 150px;
   gap: 8px;
   padding-left: 20px;
+  padding-bottom: 10px;
   position: relative;
+  margin-left: 10px;
 }
 
 .chart-bar {
@@ -38,7 +78,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: auto;
+  margin-left: 15px;
 }
 
 .filter-button {
@@ -68,6 +108,19 @@
 
 .filter-button svg {
   font-size: 14px;
+  transform: rotate(270deg);
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+  
+  .button-group {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 10px;
+  }
 }
 
 @media (max-width: 1200px) {
