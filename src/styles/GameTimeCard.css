@@ -18,7 +18,7 @@
 
 .card-title {
   font-size: 3rem;
-  font-weight: 500;
+  font-weight: bold;
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 8px;
   position: relative;
@@ -27,7 +27,7 @@
 
 .time-text {
   font-size: 4rem;
-  font-weight: 600;
+  font-weight: 400;
   color: white;
   margin-top: 16px;
   position: relative;

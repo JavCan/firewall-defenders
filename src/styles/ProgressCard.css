@@ -13,8 +13,11 @@
 
 .progress-title {
   font-size: 2rem;
+  font-weight: bold;
   color: white;
-  margin: 0 0 16px 0;
+  margin: 0;
+  text-align: left;
+  padding-left: 24px;
 }
 
 .content-wrapper {
