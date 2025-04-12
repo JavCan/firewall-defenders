@@ -10,25 +10,27 @@ function App() {
   const [user, setUser] = useState(null)
 
   const handleLogin = (userData) => {
-    // In a real app, you would validate credentials here
-    console.log('Login successful:', userData)
+    // In a real app, you would validate credentials with an API
+    console.log('Login attempt with:', userData)
+    
+    // For demo purposes, we'll just set authenticated to true
+    setIsAuthenticated(true)
     setUser({
       name: 'Nombre Apellido',
-      username: 'Username'
+      username: userData.identifier
     })
-    setIsAuthenticated(true)
   }
 
   return (
     <div className="app-container">
-      {isAuthenticated ? (
-        <Dashboard user={user} />
-      ) : (
+      <ParticleBackground />
+      {!isAuthenticated ? (
         <>
-          <ParticleBackground />
           <BackgroundDecorations />
           <LoginForm onLogin={handleLogin} />
         </>
+      ) : (
+        <Dashboard user={user} />
       )}
     </div>
   )

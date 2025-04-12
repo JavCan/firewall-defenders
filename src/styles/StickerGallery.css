@@ -1,0 +1,90 @@
+.sticker-card-container {
+  background: rgba(111, 66, 193, 0.3);
+  border-radius: 24px;
+  padding: 16px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(138, 43, 226, 0.5);
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.sticker-title {
+  font-size: 1.3rem;
+  color: white;
+  margin: 0;
+}
+
+.filter-dropdown {
+  display: flex;
+  align-items: center;
+  background-color: rgba(30, 30, 63, 0.8);
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-dropdown:hover {
+  background-color: rgba(30, 30, 63, 1);
+}
+
+.dropdown-text {
+  color: white;
+  font-size: 14px;
+  margin-right: 8px;
+}
+
+.stickers-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  background: rgba(30, 30, 63, 0.5);
+  padding: 12px;
+  border-radius: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .stickers-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .stickers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.sticker-item {
+  border-radius: 50%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sticker-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.sticker-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

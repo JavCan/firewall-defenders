@@ -1,0 +1,35 @@
+.card-container {
+  background: linear-gradient(135deg, #3a7bd5, #6d5b98);
+  border-radius: 24px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.time-text {
+  font-size: 3.5rem;
+  font-weight: 600;
+  color: white;
+  margin-top: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.icon-background {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 150px;
+  color: rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
