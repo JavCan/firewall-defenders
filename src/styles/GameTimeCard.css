@@ -4,8 +4,13 @@
   padding: 24px;
   position: relative;
   overflow: hidden;
-  height: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  grid-area: game-time;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: auto;
+  min-height: 100%;
 }
 
 .card-title {

@@ -7,7 +7,8 @@
   border: 2px solid rgba(138, 43, 226, 0.5);
   display: flex;
   flex-direction: column;
-  height: 300px;
+  height: 100%;
+  grid-area: stickers;
 }
 
 .header-section {

@@ -12,13 +12,13 @@ const Dashboard = ({ user }) => {
       <Topbar user={user} />
       <div className="content-container">
         <div className="sidebar">
-          <div className="sidebar-icon active">
+          <div className="sidebar-icon active" id='1'>
             <FaBookmark />
           </div>
-          <div className="sidebar-icon">
+          <div className="sidebar-icon" id='2'>
             <FaCalendarAlt />
           </div>
-          <div className="sidebar-icon">
+          <div className="sidebar-icon" id='3'>
             <FaCog />
           </div>
         </div>

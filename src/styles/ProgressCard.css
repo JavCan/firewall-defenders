@@ -6,21 +6,16 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  height: 300px;
-  grid-column: span 2;
-}
-
-.progress-title {
-  font-size: 1.3rem;
-  color: white;
-  margin: 0 0 12px 0;
+  grid-area: progress;
+  height: auto;
+  min-height: 100%;
 }
 
 .chart-container {
   flex: 1;
   margin-bottom: 12px;
   position: relative;
-  height: 150px;
+  min-height: 100px;
 }
 
 .chart {
@@ -77,6 +72,6 @@
 
 @media (max-width: 1200px) {
   .progress-card-container {
-    grid-column: span 1;
+    grid-column: auto;
   }
 }
