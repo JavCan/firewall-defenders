@@ -18,6 +18,11 @@ import sticker12 from '../assets/Sticker-12.png'
 import sticker13 from '../assets/Sticker-13.png'
 import sticker14 from '../assets/Sticker-14.png'
 import sticker15 from '../assets/Sticker-15.png'
+import sticker16 from '../assets/Sticker-16.png'
+import sticker17 from '../assets/Sticker-17.png'
+import sticker18 from '../assets/Sticker-18.png'
+import sticker19 from '../assets/Sticker-19.png'
+import sticker20 from '../assets/Sticker-20.png'
 
 // Sticker images with proper imports
 const stickers = [
@@ -36,6 +41,11 @@ const stickers = [
   { src: sticker13 },
   { src: sticker14 },
   { src: sticker15 },
+  { src: sticker16 },
+  { src: sticker17 },
+  { src: sticker18 },
+  { src: sticker19 },
+  { src: sticker20 },
 ];
 
 const StickerGallery = () => {

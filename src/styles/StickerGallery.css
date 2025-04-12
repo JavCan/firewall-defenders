@@ -1,7 +1,7 @@
 .sticker-card-container {
   background: rgba(111, 66, 193, 0.3);
   border-radius: 24px;
-  padding: 16px;
+  padding: 16px 16px;
   width: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border: 2px solid rgba(138, 43, 226, 0.5);
@@ -47,9 +47,10 @@
 .stickers-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 16px;
+  row-gap: 8.2rem;
   background: rgba(30, 30, 63, 0.5);
-  padding: 12px;
+  padding: 16px;
   border-radius: 16px;
   flex: 1;
   overflow-y: auto;
