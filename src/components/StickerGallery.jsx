@@ -2,20 +2,40 @@ import React from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import '../styles/StickerGallery.css'
 
-// Sticker images - in a real app, these would be imported from your assets
+// Import all sticker images
+import sticker1 from '../assets/Sticker-01.png'
+import sticker2 from '../assets/Sticker-02.png'
+import sticker3 from '../assets/Sticker-03.png'
+import sticker4 from '../assets/Sticker-04.png'
+import sticker5 from '../assets/Sticker-05.png'
+import sticker6 from '../assets/Sticker-06.png'
+import sticker7 from '../assets/Sticker-07.png'
+import sticker8 from '../assets/Sticker-08.png'
+import sticker9 from '../assets/Sticker-09.png'
+import sticker10 from '../assets/Sticker-10.png'
+import sticker11 from '../assets/Sticker-11.png'
+import sticker12 from '../assets/Sticker-12.png'
+import sticker13 from '../assets/Sticker-13.png'
+import sticker14 from '../assets/Sticker-14.png'
+import sticker15 from '../assets/Sticker-15.png'
+
+// Sticker images with proper imports
 const stickers = [
-  { src: 'https://via.placeholder.com/80/FF4B4B/FFFFFF?text=🪐' },
-  { src: 'https://via.placeholder.com/80/3498db/FFFFFF?text=🌌' },
-  { src: 'https://via.placeholder.com/80/9b59b6/FFFFFF?text=🚀' },
-  { src: 'https://via.placeholder.com/80/f1c40f/FFFFFF?text=🚀' },
-  { src: 'https://via.placeholder.com/80/1abc9c/FFFFFF?text=⚛️' },
-  { src: 'https://via.placeholder.com/80/e74c3c/FFFFFF?text=🐱' },
-  { src: 'https://via.placeholder.com/80/7f8c8d/FFFFFF?text=🐨' },
-  { src: 'https://via.placeholder.com/80/3498db/FFFFFF?text=🥚' },
-  { src: 'https://via.placeholder.com/80/f1c40f/FFFFFF?text=📚' },
-  { src: 'https://via.placeholder.com/80/e74c3c/FFFFFF?text=⭕' },
-  { src: 'https://via.placeholder.com/80/9b59b6/FFFFFF?text=💎' },
-  { src: 'https://via.placeholder.com/80/1abc9c/FFFFFF?text=🧙' },
+  { src: sticker1 },
+  { src: sticker2 },
+  { src: sticker3 },
+  { src: sticker4 },
+  { src: sticker5 },
+  { src: sticker6 },
+  { src: sticker7 },
+  { src: sticker8 },
+  { src: sticker9 },
+  { src: sticker10 },
+  { src: sticker11 },
+  { src: sticker12 },
+  { src: sticker13 },
+  { src: sticker14 },
+  { src: sticker15 },
 ];
 
 const StickerGallery = () => {
@@ -34,7 +54,6 @@ const StickerGallery = () => {
           <div 
             key={index} 
             className="sticker-item"
-            style={{ backgroundColor: index % 2 === 0 ? '#02BEEF' : '#3498db' }}
           >
             <img 
               src={sticker.src} 
