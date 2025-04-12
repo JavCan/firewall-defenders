@@ -18,7 +18,7 @@ const Dashboard = ({ user }) => {
           <div className="sidebar-icon" id='2'>
             <FaCalendarAlt />
           </div>
-          <div className="sidebar-icon" id='3'>
+          <div className="sidebar-icon sidebar-icon-bottom" id='3'>
             <FaCog />
           </div>
         </div>
