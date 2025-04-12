@@ -28,57 +28,102 @@
 .chart-container {
   flex: 1;
   position: relative;
-  min-height: 150px;
+  min-height: 200px;
+  padding-left: 40px;
+  padding-bottom: 30px;
 }
 
 .chart-axes {
   position: absolute;
-  width: 100%;
+  width: 90%;
   height: 100%;
   pointer-events: none;
+  top: 0;
+  left: 0;
 }
 
 .y-axis {
   position: absolute;
-  left: 0;
+  left: 30px;
   top: 0;
-  height: 100%;
-  width: 3px;
+  height: calc(100% - 30px);
+  width: 2px;
   background-color: #02BEEF;
 }
 
 .x-axis {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 3px;
-  width: 100%;
+  left: 30px;
+  bottom: 30px;
+  height: 2px;
+  width: 90%;
   background-color: #02BEEF;
+}
+
+.y-axis-ticks {
+  position: absolute;
+  left: -10px;
+  top: 0;
+  height: calc(100% - 30px);
+  width: 40px;
+  font-size: 12px;
+  color: white;
+}
+
+.y-tick {
+  position: absolute;
+  right: 10px;
+  width: 30px;
+  text-align: right;
+}
+
+.x-axis-labels {
+  position: absolute;
+  left: 40px;
+  bottom: 0;
+  width: 90%;
+  height: 30px;
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.x-label {
+  font-size: 12px;
+  color: white;
+  text-align: center;
 }
 
 .chart {
   display: flex;
   align-items: flex-end;
-  height: 150px;
-  gap: 8px;
-  padding-left: 20px;
-  padding-bottom: 10px;
+  height: calc(100% - 30px);
+  gap: 4px;
+  padding-left: 40px;
   position: relative;
-  margin-left: 10px;
+  overflow-x: auto;
+}
+
+.chart-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 20px;
+  flex: 1;
 }
 
 .chart-bar {
   background-color: #02BEEF;
-  width: 20px;
-  border-radius: 4px 4px 0 0;
+  width: 12px;
+  border-radius: 3px 3px 0 0;
   transition: height 0.5s ease;
 }
 
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-left: 15px;
+  gap: 1rem;
+  margin-left: 1px;
 }
 
 .filter-button {

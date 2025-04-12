@@ -5,7 +5,7 @@ import '../styles/GameTimeCard.css'
 const GameTimeCard = ({ hours = 56 }) => {
   return (
     <div className="card-container">
-      <div className="card-title">Tiempo de juego:</div>
+      <div className="card-title">Tiempo de juego</div>
       <div className="time-text">{hours} h</div>
       <div className="icon-background">
         <FaClock />
