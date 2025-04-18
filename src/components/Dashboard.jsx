@@ -25,7 +25,7 @@ const Dashboard = ({ user }) => {
         
         <div className="main-content-wrapper">
           <div className="main-content">
-            <GameTimeCard />
+            <GameTimeCard userId={user.id} />
             <StickerGallery />
             <ProgressCard />
           </div>
