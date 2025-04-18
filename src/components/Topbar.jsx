@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FaHome, FaChartBar } from 'react-icons/fa'
 import '../styles/Topbar.css'
 
-const Topbar = ({ user = { name: 'Nombre Apellido', username: 'Username' } }) => {
+const Topbar = ({ user = { name: 'correo@ejemplo.com', username: 'Username' } }) => {
   const [activeTab, setActiveTab] = useState('inicio')
   
   return (
@@ -16,12 +16,12 @@ const Topbar = ({ user = { name: 'Nombre Apellido', username: 'Username' } }) =>
           >
             <FaHome /> Inicio
           </button>
-          <button 
+          {/* <button 
             className={`nav-button ${activeTab === 'monitoreo' ? 'active' : ''}`}
             onClick={() => setActiveTab('monitoreo')}
           >
             <FaChartBar /> Monitoreo
-          </button>
+          </button> */}
         </div>
       </div>
       
