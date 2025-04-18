@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 dotenv.config();
 
 import { router as usuarios } from './routes/usuarios.js';
+import { router as estadistica } from './routes/estadistica.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // Rutas
 app.use('/api/usuarios', usuarios);
+app.use('/api/estadistica', estadistica);
 
 // Ruta de prueba
 app.get('/', (req, res) => {

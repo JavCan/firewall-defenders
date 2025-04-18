@@ -1,0 +1,75 @@
+import { pool } from '../helpers/mysql-config.js'
+
+// Obtener todas las estadísticas
+const getEstadistica = async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM estadistica');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener estadistica:', error);
+    res.status(500).json({ error: 'Error al obtener las estadisticas' });
+  }
+};
+
+// Obtener estadísticas por tipo
+const getEstadisticaPorTipo = async (req, res) => {
+  try {
+    const { tipo } = req.params;
+    const [rows] = await pool.query(
+      'SELECT e.* FROM estadistica e JOIN tipoEstadistica t ON e.idTipo = t.id WHERE t.nombre = ?', 
+      [tipo]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener estadistica por tipo:', error);
+    res.status(500).json({ error: 'Error al obtener las estadisticas por tipo' });
+  }
+};
+
+// Obtener estadísticas de un usuario
+const getEstadisticaUsuario = async (req, res) => {
+  try {
+    const { idUsuario } = req.params;
+    const [rows] = await pool.query('SELECT * FROM estadistica WHERE idUsuario = ?', [idUsuario]);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener estadistica del usuario:', error);
+    res.status(500).json({ error: 'Error al obtener las estadisticas del usuario' });
+  }
+};
+
+// Obtener tiempo de juego de un usuario
+const getTiempoJuegoUsuario = async (req, res) => {
+  try {
+    const { idUsuario } = req.params;
+    const [rows] = await pool.query(
+      'SELECT valor_TIME FROM estadistica e JOIN tipoEstadistica t ON e.idTipo = t.id WHERE e.idUsuario = ? AND t.nombre = "Tiempo de juego total"', 
+      [idUsuario]
+    );
+    
+    if (rows.length === 0) {
+      return res.json({ tiempoTotal: "00:00:00", tiempoFormateado: "0 h 0 m" });
+    }
+    
+    // El valor es de tipo TIME en formato hh:mm:ss
+    const tiempoString = rows[0].valor_TIME;
+    
+    // Extraer las horas del formato TIME
+    const [horas, minutos, segundos] = tiempoString.split(':').map(Number);
+    
+    res.json({ 
+      tiempoTotal: tiempoString,
+      tiempoFormateado: `${horas} h ${minutos} m`
+    });
+  } catch (error) {
+    console.error('Error al obtener tiempo de juego:', error);
+    res.status(500).json({ error: 'Error al obtener el tiempo de juego' });
+  }
+};
+
+export { 
+  getEstadistica, 
+  getEstadisticaPorTipo, 
+  getEstadisticaUsuario, 
+  getTiempoJuegoUsuario 
+}
