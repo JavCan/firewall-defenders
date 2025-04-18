@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { FaChevronLeft } from 'react-icons/fa'
+import { motion } from 'framer-motion'
 import '../styles/ProgressCard.css'
 
 const ProgressCard = () => {
@@ -47,10 +48,31 @@ const ProgressCard = () => {
   }, [activeFilter])
   
   return (
-    <div className="progress-card-container">
-      <h2 className="progress-title">Progreso</h2>
+    <motion.div 
+      className="progress-card-container"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: 0.1 }}
+      whileHover={{ 
+        y: -2,
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+      }}
+    >
+      <motion.h2 
+        className="progress-title"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.15, duration: 0.2 }}
+      >
+        Progreso
+      </motion.h2>
       
-      <div className="content-wrapper">
+      <motion.div 
+        className="content-wrapper"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.2 }}
+      >
         <div className="chart-container">
           <div className="chart-axes">
             <div className="y-axis"></div>
@@ -69,10 +91,17 @@ const ProgressCard = () => {
           <div className="chart">
             {chartData.map((item, index) => (
               <div key={index} className="chart-bar-container">
-                <div 
+                <motion.div 
                   className="chart-bar"
+                  initial={{ height: 0 }}
+                  animate={{ height: `${item.value}%` }}
+                  transition={{ 
+                    delay: 0.25 + (index * 0.02), 
+                    duration: 0.4,
+                    type: "spring",
+                    stiffness: 200
+                  }}
                   style={{ 
-                    height: `${item.value}%`,
                     backgroundColor: `rgba(2, 190, 239, ${0.7 + (item.value / 200)})`
                   }}
                 />
@@ -82,27 +111,33 @@ const ProgressCard = () => {
         </div>
         
         <div className="button-group">
-          <button 
+          <motion.button 
             className={`filter-button ${activeFilter === 'niveles' ? 'active' : ''}`}
             onClick={() => setActiveFilter('niveles')}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
           >
             <FaChevronLeft /> Niveles
-          </button>
-          <button 
+          </motion.button>
+          <motion.button 
             className={`filter-button ${activeFilter === 'torretas' ? 'active' : ''}`}
             onClick={() => setActiveFilter('torretas')}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
           >
             <FaChevronLeft /> Torretas
-          </button>
-          <button 
+          </motion.button>
+          <motion.button 
             className={`filter-button ${activeFilter === 'mejoras' ? 'active' : ''}`}
             onClick={() => setActiveFilter('mejoras')}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
           >
             <FaChevronLeft /> Mejoras
-          </button>
+          </motion.button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 

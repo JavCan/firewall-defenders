@@ -1,5 +1,6 @@
 import React from 'react'
 import { FaChevronDown } from 'react-icons/fa'
+import { motion } from 'framer-motion'
 import '../styles/StickerGallery.css'
 
 // Import all sticker images
@@ -50,30 +51,65 @@ const stickers = [
 
 const StickerGallery = () => {
   return (
-    <div className="sticker-card-container">
-      <div className="header-section">
-        <h2 className="sticker-title">Stickers</h2>
-        <div className="filter-dropdown">
+    <motion.div 
+      className="sticker-card-container"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: 0.05 }}
+      whileHover={{ 
+        y: -2,
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+      }}
+    >
+      <motion.div 
+        className="header-section"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.15, duration: 0.2 }}
+      >
+        <motion.h2 
+          className="sticker-title"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.2 }}
+        >
+          Stickers
+        </motion.h2>
+        <motion.div 
+          className="filter-dropdown"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
           <span className="dropdown-text">Más usados</span>
           <FaChevronDown />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
       
-      <div className="stickers-grid">
+      <motion.div className="stickers-grid">
         {stickers.map((sticker, index) => (
-          <div 
+          <motion.div 
             key={index} 
             className="sticker-item"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ 
+              delay: 0.25 + (index * 0.01), 
+              duration: 0.2 
+            }}
+            whileHover={{ 
+              scale: 1.05,
+              transition: { duration: 0.1 }
+            }}
           >
             <img 
               src={sticker.src} 
               alt={`Sticker ${index + 1}`} 
               className="sticker-image"
             />
-          </div>
+          </motion.div>
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 

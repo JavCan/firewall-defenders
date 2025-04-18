@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { FaClock } from 'react-icons/fa'
+import { motion } from 'framer-motion'
 import '../styles/GameTimeCard.css'
 
 const GameTimeCard = ({ userId = 1 }) => {
@@ -28,15 +29,41 @@ const GameTimeCard = ({ userId = 1 }) => {
   }, [userId]);
 
   return (
-    <div className="card-container">
-      <div className="card-title">Tiempo de juego:</div>
-      <div className="time-text">
+    <motion.div 
+      className="card-container"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ 
+        y: -2,
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+      }}
+    >
+      <motion.div 
+        className="card-title"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1, duration: 0.2 }}
+      >
+        Tiempo de juego:
+      </motion.div>
+      <motion.div 
+        className="time-text"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.15, duration: 0.2 }}
+      >
         {loading ? 'Cargando...' : timeData.formattedTime || '0 h 0 m'}
-      </div>
-      <div className="icon-background">
+      </motion.div>
+      <motion.div 
+        className="icon-background"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+      >
         <FaClock />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 
