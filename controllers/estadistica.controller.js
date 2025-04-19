@@ -67,9 +67,80 @@ const getTiempoJuegoUsuario = async (req, res) => {
   }
 };
 
+// Obtener todas las estadísticas para el dashboard de un usuario
+const getEstadisticasDashboard = async (req, res) => {
+  try {
+    const { idUsuario } = req.params;
+    
+    // Consulta para obtener todas las estadísticas relevantes para el dashboard
+    const [rows] = await pool.query(`
+      SELECT 
+        t.id as idTipo,
+        t.nombre as tipoNombre,
+        COALESCE(e.valor_INT, 0) as valor,
+        COALESCE(e.valor_TIME, '00:00:00') as valorTiempo
+      FROM 
+        tipoEstadistica t
+      LEFT JOIN 
+        estadistica e ON t.id = e.idTipo AND e.idUsuario = ?
+      WHERE 
+        t.nombre IN ('Niveles completados', 'Torretas construidas', 'Enemigos eliminados', 'Cristales recolectados')
+    `, [idUsuario]);
+    
+    // Formatear los datos para el frontend
+    const estadisticas = rows.map(row => {
+      return {
+        id: row.idTipo,
+        tipo: row.tipoNombre,
+        valor: row.valor
+      };
+    });
+    
+    res.json(estadisticas);
+  } catch (error) {
+    console.error('Error al obtener estadísticas para el dashboard:', error);
+    res.status(500).json({ error: 'Error al obtener las estadísticas para el dashboard' });
+  }
+};
+
+// Obtener una estadística específica para un usuario
+const getEstadisticaEspecifica = async (req, res) => {
+  try {
+    const { idUsuario, tipoNombre } = req.params;
+    
+    const [rows] = await pool.query(`
+      SELECT 
+        t.id as idTipo,
+        t.nombre as tipoNombre,
+        COALESCE(e.valor_INT, 0) as valor
+      FROM 
+        tipoEstadistica t
+      LEFT JOIN 
+        estadistica e ON t.id = e.idTipo AND e.idUsuario = ?
+      WHERE 
+        t.nombre = ?
+    `, [idUsuario, tipoNombre]);
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Tipo de estadística no encontrado' });
+    }
+    
+    res.json({
+      id: rows[0].idTipo,
+      tipo: rows[0].tipoNombre,
+      valor: rows[0].valor
+    });
+  } catch (error) {
+    console.error('Error al obtener estadística específica:', error);
+    res.status(500).json({ error: 'Error al obtener la estadística específica' });
+  }
+};
+
 export { 
   getEstadistica, 
   getEstadisticaPorTipo, 
   getEstadisticaUsuario, 
-  getTiempoJuegoUsuario 
+  getTiempoJuegoUsuario,
+  getEstadisticasDashboard,
+  getEstadisticaEspecifica
 }
