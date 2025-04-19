@@ -15,8 +15,8 @@ app.use(multer().array());
 app.use(express.json());
 
 // Rutas
-app.use('/api/usuarios', usuarios);
-app.use('/api/estadistica', estadistica);
+app.use('/', usuarios);
+app.use('/', estadistica);
 
 // Ruta de prueba
 app.get('/', (req, res) => {

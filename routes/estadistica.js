@@ -8,9 +8,9 @@ import {
 
 const router = express.Router()
 
-router.get('/', getEstadistica);
-router.get('/tipo/:tipo', getEstadisticaPorTipo);
-router.get('/usuario/:idUsuario', getEstadisticaUsuario);
-router.get('/usuario/:idUsuario/tiempo', getTiempoJuegoUsuario);
+router.get('api/estadistica', getEstadistica);
+router.get('api/estadistica/tipo/:tipo', getEstadisticaPorTipo);
+router.get('api/estadistica/usuario/:idUsuario', getEstadisticaUsuario);
+router.get('api/estadistica/usuario/:idUsuario/tiempo', getTiempoJuegoUsuario);
 
 export { router }
