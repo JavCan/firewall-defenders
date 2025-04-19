@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FaHome, FaChartBar } from 'react-icons/fa'
 import '../styles/Topbar.css'
 
-const Topbar = ({ user = { name: 'correo@ejemplo.com', username: 'Username' } }) => {
+const Topbar = ({ user = { name: 'Usuario', email: 'correo@ejemplo.com', username: 'Gamer' } }) => {
   const [activeTab, setActiveTab] = useState('inicio')
   
   return (
@@ -27,11 +27,11 @@ const Topbar = ({ user = { name: 'correo@ejemplo.com', username: 'Username' } })
       
       <div className="right-section">
         <div className="user-info">
-          <span className="user-name">{user.name}</span>
-          <span className="username">{user.username}</span>
+          <span className="user-name">{user.gamertag}</span>
+          <span className="username">{user.email}</span>
         </div>
         <div className="avatar">
-          {user.name.charAt(0)}
+          {(user.gamertag).charAt(0).toUpperCase()}
         </div>
       </div>
     </header>

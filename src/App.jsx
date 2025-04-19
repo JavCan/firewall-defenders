@@ -33,9 +33,8 @@ function App() {
       setIsAuthenticated(true)
       setUser({
         id: data.id,
-        name: data.nombre || 'Usuario',
         email: data.email,
-        username: data.username || data.nombre || 'Gamer'
+        gamertag: data.gamertag
       })
       
     } catch (error) {
