@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FaHome, FaChartBar } from 'react-icons/fa'
 import '../styles/Topbar.css'
 
-const Topbar = ({ user = { name: 'Usuario', email: 'correo@ejemplo.com', username: 'Gamer' } }) => {
+const Topbar = ({ user = {email: 'correo@ejemplo.com', gamertag: 'Gamer' } }) => {
   const [activeTab, setActiveTab] = useState('inicio')
   
   return (
