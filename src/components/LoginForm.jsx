@@ -219,7 +219,7 @@ const OutsideText = styled.div`
 `;
 
 // Update the LoginForm component to accept onLogin prop
-export default function LoginForm({ onLogin }) {
+export default function LoginForm({ onLogin, isLoading = false, error = null }) {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -247,6 +247,11 @@ export default function LoginForm({ onLogin }) {
         <SmallText>
           ¿No eres usuario de Aulify?<a href="#">Únete→</a>
         </SmallText>
+        
+        {error && (
+          <ErrorMessage>{error}</ErrorMessage>
+        )}
+        
         <form onSubmit={handleSubmit(onSubmit)}>
           <label>Correo electrónico o Usuario</label>
           <Input
@@ -268,8 +273,8 @@ export default function LoginForm({ onLogin }) {
             <ErrorMessage>{errors.password.message}</ErrorMessage>
           )}
           
-          <Button type="submit">
-            Enter <span>→</span>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Cargando...' : 'Enter →'}
           </Button>
         </form>
       </FormSection>

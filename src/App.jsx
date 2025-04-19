@@ -8,21 +8,42 @@ import './App.css'
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  const handleLogin = (userData) => {
+  const handleLogin = async (userData) => {
     console.log('Login attempt with:', userData)
+    setIsLoading(true)
+    setError(null)
     
-    // Validación simplificada solo con correo electrónico
-    if (userData.identifier === 'javier@prueba.com') {
+    try {
+      // Consultar a la API si el usuario existe
+      const response = await fetch(`/api/usuarios/email/${userData.identifier}`)
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Usuario no encontrado. Verifica tus credenciales.')
+        }
+        throw new Error('Error al verificar el usuario')
+      }
+      
+      const data = await response.json()
+      
+      // Si el usuario existe en la base de datos
       setIsAuthenticated(true)
       setUser({
-        id: 1, // Este ID debe coincidir con el de tu base de datos
-        name: 'Javier',
-        email: userData.identifier
+        id: data.id,
+        name: data.nombre || 'Usuario',
+        email: data.email,
+        username: data.username || data.nombre || 'Gamer'
       })
-    } else {
-      // Mostrar mensaje de error
-      alert('Correo electrónico no válido. Usa javier@prueba.com para pruebas.')
+      
+    } catch (error) {
+      console.error('Error durante el login:', error)
+      setError(error.message)
+      alert(error.message)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -32,7 +53,7 @@ function App() {
       {!isAuthenticated ? (
         <>
           <BackgroundDecorations />
-          <LoginForm onLogin={handleLogin} />
+          <LoginForm onLogin={handleLogin} isLoading={isLoading} error={error} />
         </>
       ) : (
         <Dashboard user={user} />
