@@ -19,6 +19,8 @@ const getUsuario = async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
+    
+    res.json(rows[0]); // Añadido para devolver el usuario encontrado
 
   } catch (error) {
     console.error('Error al obtener usuario por ID:', error);
@@ -26,4 +28,23 @@ const getUsuario = async (req, res) => {
   }
 };
 
-export { getUsuarios, getUsuario }
+// Añadir nueva función para buscar usuario por email
+const getUsuarioPorEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    console.log(`Buscando usuario con email: ${email}`);
+    
+    const [rows] = await pool.query('SELECT * FROM usuario WHERE email = ?', [email]);
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    
+    res.json(rows[0]);
+  } catch (error) {
+    console.error('Error al obtener usuario por email:', error);
+    res.status(500).json({ error: 'Error al obtener el usuario por email' });
+  }
+};
+
+export { getUsuarios, getUsuario, getUsuarioPorEmail }
