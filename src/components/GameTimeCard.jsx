@@ -10,12 +10,26 @@ const GameTimeCard = ({ userId = 1 }) => {
   useEffect(() => {
     const fetchGameTime = async () => {
       try {
+        // Asegúrate de que esta ruta coincida con tu endpoint en el backend
         const response = await fetch(`/api/estadistica/usuario/${userId}/tiempo`);
+        
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Datos de tiempo recibidos:', data); // Para depuración
         
         if (data && data.tiempoFormateado) {
           setTimeData({
             formattedTime: data.tiempoFormateado
+          });
+        } else if (data && data.tiempo) {
+          // Alternativa si el formato es diferente
+          const hours = Math.floor(data.tiempo / 60);
+          const minutes = data.tiempo % 60;
+          setTimeData({
+            formattedTime: `${hours} h ${minutes} m`
           });
         }
       } catch (error) {
