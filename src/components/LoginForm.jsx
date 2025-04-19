@@ -8,9 +8,10 @@ import { motion } from 'framer-motion';
 import '../styles/variables.css';
 import aulifyLogo from '../assets/aulify.png';
 
+// Modificar el esquema para hacer la contraseña opcional
 const schema = yup.object().shape({
   identifier: yup.string().required('Correo electrónico o Usuario es requerido'),
-  password: yup.string().required('Contraseña es requerida'),
+  password: yup.string().optional(), // Hacemos la contraseña opcional
 });
 
 const FormContainer = styled(motion.div)`
@@ -220,7 +221,11 @@ const OutsideText = styled.div`
 // Update the LoginForm component to accept onLogin prop
 export default function LoginForm({ onLogin }) {
   const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
+    defaultValues: {
+      identifier: '',
+      password: 'password-temporal' // Valor por defecto para pruebas
+    }
   });
 
   const onSubmit = (data) => {

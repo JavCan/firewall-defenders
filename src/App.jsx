@@ -10,15 +10,20 @@ function App() {
   const [user, setUser] = useState(null)
 
   const handleLogin = (userData) => {
-    // In a real app, you would validate credentials with an API
     console.log('Login attempt with:', userData)
     
-    // For demo purposes, we'll just set authenticated to true
-    setIsAuthenticated(true)
-    setUser({
-      name: 'Nombre Apellido',
-      username: userData.identifier
-    })
+    // Validación simplificada solo con correo electrónico
+    if (userData.identifier === 'javier@prueba.com') {
+      setIsAuthenticated(true)
+      setUser({
+        id: 1, // Este ID debe coincidir con el de tu base de datos
+        name: 'Javier',
+        email: userData.identifier
+      })
+    } else {
+      // Mostrar mensaje de error
+      alert('Correo electrónico no válido. Usa javier@prueba.com para pruebas.')
+    }
   }
 
   return (
