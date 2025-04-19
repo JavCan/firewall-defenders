@@ -14,11 +14,36 @@ const getEstadistica = async (req, res) => {
 // Obtener estadísticas por tipo
 const getEstadisticaPorTipo = async (req, res) => {
   try {
-    const { tipo } = req.params;
+    const { idTipo } = req.params;
+    console.log(`Buscando estadísticas con idTipo: ${idTipo}`);
+    
+    // First, check if the tipo exists
+    const [tipoExists] = await pool.query('SELECT * FROM tipoEstadistica WHERE id = ?', [idTipo]);
+    
+    if (tipoExists.length === 0) {
+      console.log(`No existe un tipo de estadística con id: ${idTipo}`);
+      return res.status(404).json({ 
+        error: `No existe un tipo de estadística con id: ${idTipo}`,
+        tiposDisponibles: await getTiposEstadistica()
+      });
+    }
+    
+    // Now query the estadisticas
     const [rows] = await pool.query(
-      'SELECT e.* FROM estadistica e JOIN tipoEstadistica t ON e.idTipo = t.id WHERE t.nombre = ?', 
-      [tipo]
+      'SELECT * FROM estadistica WHERE idTipo = ?', 
+      [idTipo]
     );
+    
+    console.log(`Resultados encontrados: ${rows.length}`);
+    
+    if (rows.length === 0) {
+      // If no records found, return a more informative message
+      return res.json({
+        message: `No hay estadísticas registradas para el tipo con id: ${idTipo} (${tipoExists[0].nombre})`,
+        tipo: tipoExists[0]
+      });
+    }
+    
     res.json(rows);
   } catch (error) {
     console.error('Error al obtener estadistica por tipo:', error);
@@ -26,6 +51,17 @@ const getEstadisticaPorTipo = async (req, res) => {
   }
 };
 
+// Helper function to get all tipos de estadistica
+// Obtener todos los tipos de estadísticas
+const getTiposEstadistica = async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM tipoEstadistica');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener tipos de estadística:', error);
+    res.status(500).json({ error: 'Error al obtener los tipos de estadística' });
+  }
+};
 // Obtener estadísticas de un usuario
 const getEstadisticaUsuario = async (req, res) => {
   try {
@@ -37,6 +73,28 @@ const getEstadisticaUsuario = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener las estadisticas del usuario' });
   }
 };
+
+// Obtener estadísticas de un usuario por tipo
+const getEstadisticaUsuarioPorTipo = async (req, res) => {
+  try {
+    const { idUsuario, idTipo } = req.params;
+    const [rows] = await pool.query(
+      'SELECT * FROM estadistica WHERE idUsuario = ? AND idTipo = ?', 
+      [idUsuario, idTipo]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'No se encontraron estadísticas para este usuario y tipo' });
+    }
+    
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener estadistica del usuario por tipo:', error);
+    res.status(500).json({ error: 'Error al obtener las estadisticas del usuario por tipo' });
+  }
+};
+
+
 
 // Obtener tiempo de juego de un usuario
 const getTiempoJuegoUsuario = async (req, res) => {
@@ -68,8 +126,11 @@ const getTiempoJuegoUsuario = async (req, res) => {
 };
 
 export { 
-  getEstadistica, 
-  getEstadisticaPorTipo, 
-  getEstadisticaUsuario, 
-  getTiempoJuegoUsuario 
-}
+    getEstadistica, 
+    getEstadisticaPorTipo, 
+    getEstadisticaUsuario, 
+    getTiempoJuegoUsuario,
+    getEstadisticaUsuarioPorTipo,
+    getTiposEstadistica
+  }
+  
