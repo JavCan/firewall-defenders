@@ -3,61 +3,97 @@ import { FaChevronDown, FaChevronUp, FaFlag, FaTowerObservation, FaSkull, FaGem 
 import { motion, AnimatePresence } from 'framer-motion'
 import '../styles/ProgressCard.css'
 
-const ProgressCard = () => {
+const ProgressCard = ({ userId = 1 }) => {
   const [activeFilter, setActiveFilter] = useState('todos')
   const [statsData, setStatsData] = useState([])
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const menuRef = useRef(null)
   
-  // Simulating data fetching from a database
+  // Mapping of idTipo to stat properties
+  const statTypeMapping = {
+    2: { 
+      id: 'niveles', 
+      title: 'Niveles completados', 
+      icon: <FaFlag />, 
+      color: '#4CAF50',
+      descriptionTemplate: '{value}/12 niveles superados'
+    },
+    3: { 
+      id: 'torretas', 
+      title: 'Torretas construidas', 
+      icon: <FaTowerObservation />, 
+      color: '#2196F3',
+      descriptionTemplate: '{value} torretas en total'
+    },
+    4: { 
+      id: 'enemigos', 
+      title: 'Enemigos eliminados', 
+      icon: <FaSkull />, 
+      color: '#FF5722',
+      descriptionTemplate: '{value} enemigos derrotados'
+    },
+    5: { 
+      id: 'cristales', 
+      title: 'Cristales recolectados', 
+      icon: <FaGem />, 
+      color: '#9C27B0',
+      descriptionTemplate: '{value} cristales obtenidos'
+    }
+  }
+  
+  // Fetch data from the API
   useEffect(() => {
-    // This would be replaced with your actual database fetch
-    const fetchData = () => {
-      // Datos de ejemplo
-      const allStats = [
-        { 
-          id: 'niveles', 
-          title: 'Niveles completados', 
-          value: 8, 
-          icon: <FaFlag />, 
-          color: '#4CAF50',
-          description: '8/12 niveles superados'
-        },
-        { 
-          id: 'torretas', 
-          title: 'Torretas construidas', 
-          value: 24, 
-          icon: <FaTowerObservation />, 
-          color: '#2196F3',
-          description: '24 torretas en total'
-        },
-        { 
-          id: 'enemigos', 
-          title: 'Enemigos eliminados', 
-          value: 156, 
-          icon: <FaSkull />, 
-          color: '#FF5722',
-          description: '156 enemigos derrotados'
-        },
-        { 
-          id: 'cristales', 
-          title: 'Cristales recolectados', 
-          value: 342, 
-          icon: <FaGem />, 
-          color: '#9C27B0',
-          description: '342 cristales obtenidos'
-        }
-      ];
+    const fetchData = async () => {
+      setLoading(true)
+      setError(null)
       
-      if (activeFilter === 'todos') {
-        setStatsData(allStats);
-      } else {
-        setStatsData(allStats.filter(stat => stat.id === activeFilter));
+      try {
+        const response = await fetch(`/api/estadistica/usuario/${userId}`)
+        
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`)
+        }
+        
+        const data = await response.json()
+        
+        // Filter out time-based statistics (those with non-zero valor_TIME)
+        const filteredData = data.filter(stat => stat.valor_TIME === "00:00:00")
+        
+        // Transform API data to our component format
+        const transformedData = filteredData.map(stat => {
+          const typeInfo = statTypeMapping[stat.idTipo]
+          
+          if (!typeInfo) return null
+          
+          return {
+            id: typeInfo.id,
+            title: typeInfo.title,
+            value: stat.valor_INT,
+            icon: typeInfo.icon,
+            color: typeInfo.color,
+            description: typeInfo.descriptionTemplate.replace('{value}', stat.valor_INT)
+          }
+        }).filter(Boolean) // Remove null entries
+        
+        // Filter based on active filter
+        if (activeFilter === 'todos') {
+          setStatsData(transformedData)
+        } else {
+          setStatsData(transformedData.filter(stat => stat.id === activeFilter))
+        }
+      } catch (err) {
+        console.error('Error fetching statistics:', err)
+        setError('Failed to load statistics')
+        setStatsData([])
+      } finally {
+        setLoading(false)
       }
     }
     
     fetchData()
-  }, [activeFilter])
+  }, [activeFilter, userId])
   
   // Cerrar el menú al hacer clic fuera de él
   useEffect(() => {
@@ -187,35 +223,43 @@ const ProgressCard = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.2 }}
       >
-        {statsData.map((stat, index) => (
-          <motion.div 
-            key={stat.id}
-            className="stat-card"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + (index * 0.1), duration: 0.3 }}
-            whileHover={{ 
-              y: -5,
-              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)"
-            }}
-          >
-            <div className="stat-icon" style={{ backgroundColor: stat.color }}>
-              {stat.icon}
-            </div>
-            <div className="stat-content">
-              <h3 className="stat-title">{stat.title}</h3>
-              <motion.div 
-                className="stat-value"
-                initial={{ scale: 0.5 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2 + (index * 0.1), type: "spring", stiffness: 200 }}
-              >
-                {stat.value}
-              </motion.div>
-              <div className="stat-description">{stat.description}</div>
-            </div>
-          </motion.div>
-        ))}
+        {loading ? (
+          <div className="loading-message">Cargando estadísticas...</div>
+        ) : error ? (
+          <div className="error-message">{error}</div>
+        ) : statsData.length === 0 ? (
+          <div className="no-data-message">No hay estadísticas disponibles</div>
+        ) : (
+          statsData.map((stat, index) => (
+            <motion.div 
+              key={stat.id}
+              className="stat-card"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + (index * 0.1), duration: 0.3 }}
+              whileHover={{ 
+                y: -5,
+                boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)"
+              }}
+            >
+              <div className="stat-icon" style={{ backgroundColor: stat.color }}>
+                {stat.icon}
+              </div>
+              <div className="stat-content">
+                <h3 className="stat-title">{stat.title}</h3>
+                <motion.div 
+                  className="stat-value"
+                  initial={{ scale: 0.5 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2 + (index * 0.1), type: "spring", stiffness: 200 }}
+                >
+                  {stat.value}
+                </motion.div>
+                <div className="stat-description">{stat.description}</div>
+              </div>
+            </motion.div>
+          ))
+        )}
       </motion.div>
     </motion.div>
   )
