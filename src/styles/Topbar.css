@@ -21,18 +21,23 @@
   max-height: 40px;
   margin-right: .7rem;
   border-radius: 50%;
-  background-color: #ff5a5f;
+  background-color: #E83E52;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.2s ease;
+}
+
+.alogo {
+  width: 24px;
+  height: 24px;
 }
 
 .logo:hover {
   transform: scale(1.05);
+  /* La transición se ha movido al selector principal */
 }
 
 .nav-buttons {
@@ -56,7 +61,7 @@
 }
 
 .nav-button.active {
-  background-color: #ff5a5f;
+  background-color: #E83E52;
 }
 
 .nav-button:not(.active) {
@@ -99,7 +104,7 @@
   height: 40px;
   margin-right: .7rem;
   border-radius: 50%;
-  background-color: #ff5a5f;
+  background-color: #E83E52;
   display: flex;
   align-items: center;
   justify-content: center;

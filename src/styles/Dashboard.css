@@ -51,7 +51,7 @@
 }
 
 .sidebar-icon.active {
-  background-color: #ff5a5f;
+  background-color: #E83E52;
 }
 
 .sidebar-icon:not(.active) {
@@ -64,7 +64,7 @@
 }
 
 .sidebar-icon.active:hover {
-  background-color: #ff5a5f;
+  background-color: #E83E52;
   transform: translateY(-2px);
 }
 
