@@ -1,4 +1,5 @@
 import { pool } from '../helpers/mysql-config.js'
+
 // Obtener todos los Usuarios
 const getUsuarios = async (req, res) => {
   try {
