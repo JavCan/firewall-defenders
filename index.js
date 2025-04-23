@@ -3,33 +3,24 @@ import cors from 'cors'
 import multer from 'multer'
 import dotenv from 'dotenv'
 dotenv.config();
+console.log('[index.js] DBNAME from process.env:', process.env.DBNAME); 
 
-import { router as usuarios } from './routes/usuarios.js';
-import { router as estadistica } from './routes/estadistica.js';
+import { router as usuariosRouter } from './routes/usuarios.js'; // Renamed import
+import { router as estadisticaRouter } from './routes/estadistica.js'; // Renamed import
+import { loginRouter } from './routes/login.js'; // Import the new login router
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const app = express()
+const port = process.env.PORT || 3000
 
-app.use(cors());
-app.use(multer().array());
-app.use(express.json());
+// Middleware
+app.use(cors())
+app.use(express.json()) // Middleware to parse JSON bodies
 
 // Rutas
-app.use('/', usuarios);
-app.use('/', estadistica);
+app.use(usuariosRouter); 
+app.use(estadisticaRouter);
+app.use(loginRouter); // Use the login router
 
-// Ruta de prueba
-app.get('/', (req, res) => {
-  res.json({ message: 'API de Aulify funcionando correctamente' });
-});
-
-// Manejo de errores
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Error interno del servidor' });
-});
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor ejecutándose en el puerto ${PORT}`);
-});
+app.listen(port, () => {
+  console.log(`Servidor ejecutándose en el puerto ${port}`)
+})
