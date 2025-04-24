@@ -1,5 +1,4 @@
-// Add this import at the top with other imports
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -218,21 +217,58 @@ const OutsideText = styled.div`
   }
 `;
 
-// Update the LoginForm component to accept onLogin prop
-export default function LoginForm({ onLogin, isLoading = false, error = null }) {
+// Update the LoginForm component to accept onLogin prop (or manage state internally)
+// Remove the export default from here if you keep the one at the end,
+// OR remove the one at the end and keep this one. Let's keep this one.
+export default function LoginForm({ onLogin }) { // Removed isLoading and error from props for now, will manage internally
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       identifier: '',
-      password: 'password-temporal' // Valor por defecto para pruebas
+      password: '' // Clear default password for production
     }
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
-    // Call the onLogin function passed from the parent component
-    if (onLogin) {
-      onLogin(data);
+  // Add local state for loading and error messages
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Modify onSubmit to be async and perform the fetch call
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    setError(null); // Clear previous errors
+    console.log("Form data submitted:", data);
+
+    try {
+      const response = await fetch('/api/login', { // Ensure this is your correct backend endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Send identifier as email, adjust if backend expects 'identifier'
+        body: JSON.stringify({ email: data.identifier, password: data.password }),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Error al iniciar sesión');
+      }
+
+      // Handle successful login
+      console.log('Inicio de sesión exitoso:', responseData);
+      if (onLogin) {
+        onLogin(responseData); // Pass response data (like token) to parent if needed
+      }
+      // Example: Redirect or save token
+      // localStorage.setItem('token', responseData.token);
+      // window.location.href = '/dashboard';
+
+    } catch (err) {
+      console.error('Error en onSubmit:', err);
+      setError(err.message || 'Ocurrió un error inesperado.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -241,38 +277,42 @@ export default function LoginForm({ onLogin, isLoading = false, error = null }) 
       <Logo>
         <img src={aulifyLogo} alt="Aulify Logo" />
       </Logo>
-      
+
       <FormSection>
         <h2>Inicia sesión</h2>
         <SmallText>
           ¿No eres usuario de Aulify?<a href="#">Únete→</a>
         </SmallText>
-        
+
+        {/* Display the local error state */}
         {error && (
           <ErrorMessage>{error}</ErrorMessage>
         )}
-        
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <label>Correo electrónico o Usuario</label>
           <Input
             {...register('identifier')}
             placeholder="Escribe tu correo o Usuario..."
             type="text"
+            disabled={isLoading} // Disable input while loading
           />
           {errors.identifier && (
             <ErrorMessage>{errors.identifier.message}</ErrorMessage>
           )}
-          
+
           <label>Contraseña</label>
           <Input
             {...register('password')}
             placeholder="Escribe tu contraseña..."
             type="password"
+            disabled={isLoading} // Disable input while loading
           />
           {errors.password && (
             <ErrorMessage>{errors.password.message}</ErrorMessage>
           )}
-          
+
+          {/* Use local isLoading state for the button */}
           <Button type="submit" disabled={isLoading}>
             {isLoading ? 'Cargando...' : 'Enter →'}
           </Button>
@@ -281,3 +321,4 @@ export default function LoginForm({ onLogin, isLoading = false, error = null }) 
     </FormContainer>
   );
 }
+

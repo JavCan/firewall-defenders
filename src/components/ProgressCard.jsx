@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { FaChevronDown, FaChevronUp, FaFlag, FaTowerObservation, FaSkull, FaGem } from 'react-icons/fa6'
-import { motion, AnimatePresence } from 'framer-motion'
-import '../styles/ProgressCard.css'
+import React, { useState, useEffect, useRef } from 'react';
+import { FaChevronDown, FaChevronUp, FaFlag, FaTowerObservation, FaSkull, FaGem } from 'react-icons/fa6';
+import { motion, AnimatePresence } from 'framer-motion';
+import '../styles/ProgressCard.css';
 
-const ProgressCard = ({ userId = 1 }) => {
-  const [activeFilter, setActiveFilter] = useState('todos')
-  const [statsData, setStatsData] = useState([])
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const menuRef = useRef(null)
-  
+// Elimina el valor por defecto userId = 1
+const ProgressCard = ({ userId }) => {
+  const [activeFilter, setActiveFilter] = useState('todos');
+  const [statsData, setStatsData] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const menuRef = useRef(null);
+
   // Mapping of idTipo to stat properties
   const statTypeMapping = {
     2: { 
@@ -42,31 +43,42 @@ const ProgressCard = ({ userId = 1 }) => {
       descriptionTemplate: '{value} cristales obtenidos'
     }
   }
-  
+
   // Fetch data from the API
   useEffect(() => {
+    // Asegúrate de que userId tenga un valor antes de hacer fetch
+    if (!userId) {
+        console.warn('ProgressCard: userId no proporcionado.');
+        setLoading(false); // Detiene la carga si no hay ID
+        setError('Usuario no identificado'); // Muestra un error o mensaje
+        setStatsData([]); // Limpia los datos
+        return; // No continuar si no hay userId
+    }
+
     const fetchData = async () => {
-      setLoading(true)
-      setError(null)
-      
+      setLoading(true);
+      setError(null);
+
       try {
-        const response = await fetch(`/api/estadistica/usuario/${userId}`)
-        
+        // Usa el userId recibido por props
+        const response = await fetch(`/api/estadistica/usuario/${userId}`);
+
         if (!response.ok) {
-          throw new Error(`Error: ${response.status}`)
+          throw new Error(`Error: ${response.status}`);
         }
-        
-        const data = await response.json()
-        
+
+        const data = await response.json();
+        console.log(`Datos de estadísticas recibidos para userId ${userId}:`, data); // Para depuración
+
         // Filter out time-based statistics (those with non-zero valor_TIME)
-        const filteredData = data.filter(stat => stat.valor_TIME === "00:00:00")
-        
+        const filteredData = data.filter(stat => stat.valor_TIME === "00:00:00");
+
         // Transform API data to our component format
         const transformedData = filteredData.map(stat => {
-          const typeInfo = statTypeMapping[stat.idTipo]
-          
-          if (!typeInfo) return null
-          
+          const typeInfo = statTypeMapping[stat.idTipo];
+
+          if (!typeInfo) return null;
+
           return {
             id: typeInfo.id,
             title: typeInfo.title,
@@ -74,27 +86,28 @@ const ProgressCard = ({ userId = 1 }) => {
             icon: typeInfo.icon,
             color: typeInfo.color,
             description: typeInfo.descriptionTemplate.replace('{value}', stat.valor_INT)
-          }
-        }).filter(Boolean) // Remove null entries
-        
+          };
+        }).filter(Boolean); // Remove null entries
+
         // Filter based on active filter
         if (activeFilter === 'todos') {
-          setStatsData(transformedData)
+          setStatsData(transformedData);
         } else {
-          setStatsData(transformedData.filter(stat => stat.id === activeFilter))
+          setStatsData(transformedData.filter(stat => stat.id === activeFilter));
         }
       } catch (err) {
-        console.error('Error fetching statistics:', err)
-        setError('Failed to load statistics')
-        setStatsData([])
+        console.error('Error fetching statistics:', err);
+        setError('Failed to load statistics');
+        setStatsData([]);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    
-    fetchData()
-  }, [activeFilter, userId])
-  
+    };
+
+    fetchData();
+    // userId ya está en las dependencias, lo cual es correcto
+  }, [activeFilter, userId]);
+
   // Cerrar el menú al hacer clic fuera de él
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -226,7 +239,7 @@ const ProgressCard = ({ userId = 1 }) => {
         {loading ? (
           <div className="loading-message">Cargando estadísticas...</div>
         ) : error ? (
-          <div className="error-message">{error}</div>
+          <div className="error-message">{error}</div> // Muestra el mensaje de error
         ) : statsData.length === 0 ? (
           <div className="no-data-message">No hay estadísticas disponibles</div>
         ) : (

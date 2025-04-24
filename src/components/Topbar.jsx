@@ -53,7 +53,7 @@ const Topbar = ({ user = {email: 'correo@ejemplo.com', gamertag: 'Gamer' } }) =>
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.2 }}
         >
-          <span className="user-name">{user.gamertag}</span>
+          <span className="user-name">{user.name}</span>
           <span className="username">{user.email}</span>
         </motion.div>
         <motion.div 
@@ -67,7 +67,7 @@ const Topbar = ({ user = {email: 'correo@ejemplo.com', gamertag: 'Gamer' } }) =>
           }}
           whileTap={{ scale: 0.97 }}
         >
-          {(user.gamertag).charAt(0).toUpperCase()}
+          {(user.name).charAt(0).toUpperCase()}
         </motion.div>
       </div>
     </header>

@@ -1,59 +1,71 @@
-import React, { useState, useEffect } from 'react'
-import { FaClock } from 'react-icons/fa'
-import { motion } from 'framer-motion'
-import '../styles/GameTimeCard.css'
+import React, { useState, useEffect } from 'react';
+import { FaClock } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import '../styles/GameTimeCard.css';
 
-const GameTimeCard = ({ userId = 1 }) => {
-  const [timeData, setTimeData] = useState({ hours: 0, minutes: 0 });
+// Elimina el valor por defecto userId = 1
+const GameTimeCard = ({ userId }) => {
+  const [timeData, setTimeData] = useState({ formattedTime: null }); // Inicializa con null o un valor por defecto
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Asegúrate de que userId tenga un valor antes de hacer fetch
+    if (!userId) {
+        console.warn('GameTimeCard: userId no proporcionado.');
+        setLoading(false); // Detiene la carga si no hay ID
+        setTimeData({ formattedTime: 'N/A' }); // Muestra N/A o similar
+        return; // No continuar si no hay userId
+    }
+
     const fetchGameTime = async () => {
+      setLoading(true); // Inicia la carga
       try {
-        // Asegúrate de que esta ruta coincida con tu endpoint en el backend
+        // Usa el userId recibido por props
         const response = await fetch(`/api/estadistica/usuario/${userId}/tiempo`);
-        
+
         if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
+          // Lanza un error más descriptivo
+          const errorData = await response.text(); // Intenta obtener más detalles del error
+          throw new Error(`Error fetching time: ${response.status} - ${errorData}`);
         }
-        
+
         const data = await response.json();
-        console.log('Datos de tiempo recibidos:', data); // Para depuración
-        
-        if (data && data.tiempoFormateado) {
-          setTimeData({
-            formattedTime: data.tiempoFormateado
-          });
-        } else if (data && data.tiempo) {
-          // Alternativa si el formato es diferente
-          const hours = Math.floor(data.tiempo / 60);
-          const minutes = data.tiempo % 60;
-          setTimeData({
-            formattedTime: `${hours} h ${minutes} m`
-          });
+        console.log(`Datos de tiempo recibidos para userId ${userId}:`, data); // Para depuración
+
+        // Simplifica la lógica de asignación, asumiendo que el backend siempre devuelve 'tiempoFormateado'
+        if (data && data.tiempoFormateado !== undefined) {
+           setTimeData({
+             formattedTime: data.tiempoFormateado
+           });
+        } else {
+           // Si 'tiempoFormateado' no viene, considera un valor por defecto o maneja el caso
+           console.warn('Respuesta inesperada del backend para tiempo:', data);
+           setTimeData({ formattedTime: '0 h 0 m' }); // O 'Error' o 'N/A'
         }
       } catch (error) {
         console.error('Error fetching game time:', error);
+        setTimeData({ formattedTime: 'Error' }); // Muestra un error en la UI
       } finally {
         setLoading(false);
       }
     };
 
     fetchGameTime();
+    // Añade userId como dependencia para que se vuelva a ejecutar si cambia
   }, [userId]);
 
   return (
-    <motion.div 
+    <motion.div
       className="card-container"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      whileHover={{ 
+      whileHover={{
         y: -2,
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
       }}
     >
-      <motion.div 
+      <motion.div
         className="card-title"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -61,15 +73,16 @@ const GameTimeCard = ({ userId = 1 }) => {
       >
         Tiempo de juego:
       </motion.div>
-      <motion.div 
+      <motion.div
         className="time-text"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.15, duration: 0.2 }}
       >
-        {loading ? 'Cargando...' : timeData.formattedTime || '0 h 0 m'}
+        {/* Muestra el tiempo formateado o 'Cargando...' */}
+        {loading ? 'Cargando...' : timeData.formattedTime}
       </motion.div>
-      <motion.div 
+      <motion.div
         className="icon-background"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -78,7 +91,7 @@ const GameTimeCard = ({ userId = 1 }) => {
         <FaClock />
       </motion.div>
     </motion.div>
-  )
-}
+  );
+};
 
-export default GameTimeCard
+export default GameTimeCard;

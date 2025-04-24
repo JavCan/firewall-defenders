@@ -8,6 +8,9 @@ import { motion } from 'framer-motion'
 import '../styles/Dashboard.css'
 
 const Dashboard = ({ user }) => {
+  // Extrae el userId del objeto user. Asegúrate de que user y user.id existan.
+  const userId = user?.id;
+
   return (
     <motion.div 
       className="dashboard-container"
@@ -46,9 +49,17 @@ const Dashboard = ({ user }) => {
           transition={{ delay: 0.15, duration: 0.3 }}
         >
           <div className="main-content">
-            <GameTimeCard userId={user.id} />
-            <StickerGallery />
-            <ProgressCard />
+            {/* Pasa userId solo si existe */}
+            {userId ? (
+              <>
+                <GameTimeCard userId={userId} />
+                <StickerGallery />
+                <ProgressCard userId={userId} />
+              </>
+            ) : (
+              // Opcional: Muestra un mensaje o spinner mientras carga el user.id
+              <p>Cargando datos del usuario...</p>
+            )}
           </div>
         </motion.div>
       </div>
