@@ -252,7 +252,7 @@ export default function LoginForm({ onLogin }) { // Removed isLoading and error 
       const responseData = await response.json();
 
       if (!response.ok) {
-        throw new Error(responseData.message || 'Error al iniciar sesión');
+        throw new Error(responseData.message || 'Credenciales inválidas. Inténtalo de nuevo.');
       }
 
       // Handle successful login
