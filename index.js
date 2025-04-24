@@ -3,7 +3,7 @@ import cors from 'cors'
 import multer from 'multer'
 import dotenv from 'dotenv'
 dotenv.config();
-console.log('[index.js] DBNAME from process.env:', process.env.DBNAME); 
+console.log('[index.js] DBNAME from process.env:', process.env.DBNAME);
 
 import { router as usuariosRouter } from './routes/usuarios.js'; // Renamed import
 import { router as estadisticaRouter } from './routes/estadistica.js'; // Renamed import
@@ -17,7 +17,14 @@ app.use(cors())
 app.use(express.json()) // Middleware to parse JSON bodies
 
 // Rutas
-app.use(usuariosRouter); 
+// Añadimos el prefijo y el middleware de logging para las rutas de usuarios
+app.use('/', (req, res, next) => {
+    console.log(`>>> Petición recibida en /api/usuarios: ${req.method} ${req.originalUrl}`);
+    next(); // Pasa al siguiente middleware (el router de usuarios)
+}, usuariosRouter); // Monta el router de usuarios bajo /api/usuarios
+
+// Mantenemos las otras rutas como estaban (asumiendo que no necesitan el prefijo /api/ o ya lo tienen definido internamente)
+// Si necesitas prefijos o logging para estas, habría que modificarlas de forma similar.
 app.use(estadisticaRouter);
 app.use(loginRouter); // Use the login router
 
