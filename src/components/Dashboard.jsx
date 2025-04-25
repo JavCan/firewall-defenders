@@ -8,8 +8,9 @@ import { motion } from 'framer-motion'
 import '../styles/Dashboard.css'
 
 const Dashboard = ({ user }) => {
-  // Extrae el userId del objeto user. Asegúrate de que user y user.id existan.
+  // Extrae el userId y ultimo_sticker_desbloqueado del objeto user.
   const userId = user?.id;
+  const ultimoStickerDesbloqueado = user?.ultimo_sticker_desbloqueado; // <-- Añadido
 
   return (
     <motion.div 
@@ -49,11 +50,12 @@ const Dashboard = ({ user }) => {
           transition={{ delay: 0.15, duration: 0.3 }}
         >
           <div className="main-content">
-            {/* Pasa userId solo si existe */}
+            {/* Pasa userId y ultimoStickerDesbloqueado solo si existen */}
             {userId ? (
               <>
                 <GameTimeCard userId={userId} />
-                <StickerGallery />
+                {/* Pasa ultimoStickerDesbloqueado a StickerGallery */}
+                <StickerGallery ultimoStickerDesbloqueado={ultimoStickerDesbloqueado} /> {/* <-- Modificado */}
                 <ProgressCard userId={userId} />
               </>
             ) : (

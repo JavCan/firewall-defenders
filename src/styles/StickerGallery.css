@@ -79,6 +79,7 @@
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
+  transition: opacity 0.3s ease, filter 0.3s ease, transform 0.2s ease; /* Añade transiciones */
 }
 
 .sticker-item:hover {
@@ -86,10 +87,23 @@
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
+.sticker-item.locked .sticker-image {
+  opacity: 0.4; /* Reduce la opacidad */
+  filter: grayscale(90%); /* Aplica escala de grises */
+  cursor: default; /* Cambia el cursor para indicar que no es interactivo */
+}
+
+.sticker-item.locked {
+   pointer-events: none; /* Opcional: deshabilita eventos de puntero */
+}
+
 .sticker-image {
   width: 70%;
   height: 70%;
   object-fit: contain;
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* Add custom scrollbar styling */
