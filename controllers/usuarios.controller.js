@@ -62,7 +62,7 @@ const findOrCreateUser = async (email) => {
 
   try {
     // 1. Buscar si el usuario ya existe
-    const [existingUsers] = await pool.query('SELECT id, email, gamertag FROM usuario WHERE email = ?', [email]);
+    const [existingUsers] = await pool.query('SELECT id, email FROM usuario WHERE email = ?', [email]);
 
     if (existingUsers.length > 0) {
       console.log(`Usuario encontrado en DB local: ${email}`);

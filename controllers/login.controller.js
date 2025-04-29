@@ -5,6 +5,7 @@ import { pool } from '../helpers/mysql-config.js';
 
 const AULIFY_LOGIN_URL = 'https://www.aulify.mx/aulifyLogin';
 const AULIFY_STICKER_URL = 'https://www.aulify.mx/getLastSticker';
+const AULIFY_COINS_URL = 'https://www.aulify.mx/getCoins'; // <--  URL para monedas
 const AULIFY_API_KEY = 'tec_api_KdZRQLUyMEJJHDqztZilqg';
 const JWT_SECRET = process.env.KEYPHRASE;
 
@@ -60,6 +61,64 @@ const updateUserStickerCount = async (localUserId, aulifyToken) => {
     }
   }
 };
+//-----------------------------------------
+
+//------- Función Auxiliar: Actualizar Monedas del Usuario -------
+const updateUserCoinCount = async (localUserId, aulifyToken) => {
+  //------- Verificación del Token de Aulify -------
+  if (!aulifyToken) {
+    console.warn(`[Monedas] No se proporcionó token de Aulify para usuario ID: ${localUserId}. No se pueden actualizar monedas.`);
+    return;
+  }
+  //-----------------------------------------
+  console.log(`[Monedas] Intentando obtener monedas de Aulify para usuario local ID: ${localUserId}`);
+  try {
+    //------- Llamada a la API de Monedas de Aulify -------
+    const coinResponse = await axios.get(AULIFY_COINS_URL, { // <-- Usar la URL de monedas
+      headers: {
+        'X-Api-Key': AULIFY_API_KEY,
+        'Authorization': `Bearer ${aulifyToken}` // <-- Asumiendo Bearer token también aquí
+      }
+    });
+    //-----------------------------------------
+
+    //------- Procesamiento de la Respuesta de Monedas -------
+    if (coinResponse.status === 200 && coinResponse.data && typeof coinResponse.data.coins !== 'undefined') {
+      const coinCount = parseInt(coinResponse.data.coins, 10); // <-- Extraer 'coins'
+
+      if (!isNaN(coinCount)) {
+        console.log(`[Monedas] Cantidad de monedas de Aulify: ${coinCount}. Actualizando DB local para usuario ${localUserId}.`);
+        //------- Actualización de la Base de Datos Local -------
+        // Asegúrate que la columna en tu tabla 'usuario' se llame 'monedas'
+        await pool.query(
+          'UPDATE usuario SET monedas = ? WHERE id = ?', // <-- Actualizar columna 'monedas'
+          [coinCount, localUserId]
+        );
+        console.log(`[Monedas] DB local actualizada para usuario ${localUserId}.`);
+        //-----------------------------------------
+      } else {
+        console.warn('[Monedas] No se pudo parsear el campo "coins" como número desde la respuesta de monedas de Aulify:', coinResponse.data);
+      }
+    } else {
+      console.error('[Monedas] Respuesta no exitosa o formato inesperado del endpoint de monedas de Aulify:', coinResponse.status, coinResponse.data);
+    }
+    //-----------------------------------------
+  } catch (error) {
+    //------- Manejo de Errores (Actualización de Monedas) -------
+    console.error(`[Monedas] Error al obtener/actualizar monedas para usuario local ID ${localUserId}:`);
+    if (axios.isAxiosError(error)) {
+      console.error('  Error de Axios:', error.response?.status, error.response?.data || error.message);
+      if (error.response?.status === 401 || error.response?.status === 403) {
+         console.error('  Posible problema con el token de Aulify o API Key al llamar a /getCoins.');
+      }
+    } else {
+      console.error('  Error general (ej. DB):', error);
+    }
+    //-----------------------------------------
+  }
+};
+//-----------------------------------------
+
 
 //------- Controlador Principal: Inicio de Sesión (doLogin) -------
 const doLogin = async (req, res) => {
@@ -84,6 +143,7 @@ const doLogin = async (req, res) => {
       { email: email, password: password },
       { headers: { 'X-Api-Key': AULIFY_API_KEY } }
     );
+    //-----------------------------------------
 
     //------- Procesamiento Post-Autenticación Exitosa con Aulify -------
     if (aulifyResponse.status >= 200 && aulifyResponse.status < 300) {
@@ -94,9 +154,15 @@ const doLogin = async (req, res) => {
         //------- 2. Buscar o Crear Usuario en DB Local -------
         const localUser = await findOrCreateUser(aulifyEmail);
         console.log(`Usuario ${localUser.email} (ID: ${localUser.id}) asegurado en la base de datos local.`);
+        //-----------------------------------------
 
         //------- Actualización de Stickers (Llamada a Función Auxiliar) -------
         await updateUserStickerCount(localUser.id, aulifyToken);
+        //-----------------------------------------
+
+        //------- Actualización de Monedas (Llamada a Nueva Función Auxiliar) -------
+        await updateUserCoinCount(localUser.id, aulifyToken); // <-- Llamada a la nueva función
+        //-----------------------------------------
 
         //------- Generación de Nuestro Token JWT -------
         const payload = {
@@ -107,22 +173,26 @@ const doLogin = async (req, res) => {
         console.log('>>> DEBUG: Payload para JWT:', payload);
         const nuestroTokenJWT = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
         console.log(`JWT generado para el usuario ID: ${localUser.id}`);
+        //-----------------------------------------
 
         //------- 3. Envío de Respuesta al Frontend -------
         res.json({
             ...aulifyResponse.data,
             jwtToken: nuestroTokenJWT
         });
+        //-----------------------------------------
 
       } catch (dbError) {
-        //------- Manejo de Errores (DB Local o Stickers) -------
-        console.error('Error interacting with local database or updating stickers:', dbError);
+        //------- Manejo de Errores (DB Local, Stickers o Monedas) ------- // <-- Actualizar comentario
+        console.error('Error interacting with local database or updating stickers/coins:', dbError); // <-- Actualizar mensaje
          res.status(500).json({
              message: 'Login successful via external service, but failed during local processing.',
              aulifyData: aulifyResponse.data
          });
+         //-----------------------------------------
       }
     }
+    //-----------------------------------------
   } catch (error) {
     //------- Manejo de Errores (Proceso General de Login / Aulify) -------
     console.error('Error during Aulify login process:');
@@ -155,5 +225,8 @@ const doLogin = async (req, res) => {
     }
   }
 };
+//-----------------------------------------
 
+//------- Exportaciones -------
 export { doLogin };
+//-----------------------------------------
