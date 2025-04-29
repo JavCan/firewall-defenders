@@ -8,12 +8,8 @@ import './App.css';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  // isLoading y error ahora se manejan dentro de LoginForm,
-  // pero podrías mantenerlos aquí si necesitas un estado de carga/error global.
 
-  // Modifica handleLogin para usar directamente los datos recibidos
-  // Modifica handleLogin para ser async y obtener el ID
-  const handleLogin = async (loginResponseData) => { // <--- Hacer la función async
+  const handleLogin = async (loginResponseData) => {
     console.log('Login exitoso recibido en App:', loginResponseData);
 
     // Verifica los datos iniciales del login

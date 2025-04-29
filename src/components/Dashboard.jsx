@@ -11,6 +11,7 @@ const Dashboard = ({ user }) => {
   // Extrae el userId y ultimo_sticker_desbloqueado del objeto user.
   const userId = user?.id;
   const ultimoStickerDesbloqueado = user?.ultimo_sticker_desbloqueado; // <-- Añadido
+  const monedas = user?.monedas; // <-- Añadido
 
   return (
     <motion.div 
@@ -19,7 +20,7 @@ const Dashboard = ({ user }) => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <Topbar user={user} />
+      <Topbar user={user} monedas={monedas} />
       <div className="content-container">
         <motion.div 
           className="sidebar"

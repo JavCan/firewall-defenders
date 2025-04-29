@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { FaHome, FaChartBar } from 'react-icons/fa'
-import { motion } from 'framer-motion' // Importamos motion de framer-motion
+// Importa FaCoins
+import { FaHome, FaChartBar, FaCoins } from 'react-icons/fa'
+import { motion } from 'framer-motion'
 import '../styles/Topbar.css'
 import a from '../assets/a.png'
 
@@ -8,9 +9,14 @@ const aLogo = [
   { src: a },
 ];
 
-const Topbar = ({ user = {email: 'correo@ejemplo.com', gamertag: 'Gamer' } }) => {
+// Modifica la desestructuración para recibir 'monedas' directamente
+// y establece un valor por defecto para 'monedas' si no se proporciona.
+const Topbar = ({ user = { email: 'correo@ejemplo.com', name: 'Usuario' }, monedas = 0 }) => {
   const [activeTab, setActiveTab] = useState('inicio')
-  
+
+  // Extrae solo name y email del usuario. 'monedas' ya se recibe como prop.
+  const { name, email } = user;
+
   return (
     <header className="topbar-container">
       <div className="left-section">
@@ -47,15 +53,34 @@ const Topbar = ({ user = {email: 'correo@ejemplo.com', gamertag: 'Gamer' } }) =>
       </div>
       
       <div className="right-section">
-        <motion.div 
+        {/* Mueve la sección de monedas aquí, fuera de user-info */}
+        <motion.div
+          className="user-coins"
+          // Elimina el style prop de aquí
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15, duration: 0.2 }}
+        >
+          <span className='nav-button'>
+            <FaCoins style={{ marginRight: '5px', color: '#FFD700' }} />
+            {monedas}
+            </span> {/* Muestra la cantidad de monedas */}
+        </motion.div>
+
+        {/* El contenedor user-info ahora solo tiene nombre y email */}
+        <motion.div
           className="user-info"
+          // Elimina el style prop de aquí
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.2 }}
         >
-          <span className="user-name">{user.name}</span>
-          <span className="username">{user.email}</span>
+          {/* Muestra el nombre y email */}
+          <span className="user-name">{name}</span>
+          <span className="username">{email}</span>
         </motion.div>
+        
+        {/* El avatar sigue al final */}
         <motion.div 
           className="avatar"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -67,7 +92,8 @@ const Topbar = ({ user = {email: 'correo@ejemplo.com', gamertag: 'Gamer' } }) =>
           }}
           whileTap={{ scale: 0.97 }}
         >
-          {(user.name).charAt(0).toUpperCase()}
+          {/* Asegúrate que 'name' exista antes de usar charAt */}
+          {name ? name.charAt(0).toUpperCase() : '?'} 
         </motion.div>
       </div>
     </header>

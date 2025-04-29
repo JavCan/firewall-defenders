@@ -10,7 +10,6 @@ import aulifyLogo from '../assets/aulify.png';
 // Modificar el esquema para hacer la contraseña opcional
 const schema = yup.object().shape({
   identifier: yup.string().required('Correo electrónico o Usuario es requerido'),
-  password: yup.string().optional(), // Hacemos la contraseña opcional
 });
 
 const FormContainer = styled(motion.div)`

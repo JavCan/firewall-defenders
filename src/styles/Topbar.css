@@ -78,15 +78,27 @@
 
 .right-section {
   display: flex;
+  align-items: center; /* Asegura alineación vertical central */
+  gap: 12px; /* Mantiene el espacio entre elementos si no se especifica margen */
+}
+
+.user-coins {
+  display: flex;
   align-items: center;
-  gap: 12px;
+  color: white; /* Asegura que el texto sea blanco */
+  background-color: #E83E52;
+  border-radius: 20px;
+}
+
+.user-coins svg {
+   margin-right: 5px;
+   color: #FFD700; /* Color dorado */
 }
 
 .user-info {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  color: white;
+  flex-direction: column; 
+  align-items: flex-end; 
 }
 
 .user-name {
