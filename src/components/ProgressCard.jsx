@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+// Intenta importar FaHeartBroken desde 'react-icons/fa'
 import { FaChevronDown, FaChevronUp, FaFlag, FaTowerObservation, FaSkull, FaGem } from 'react-icons/fa6';
+import { FaHeartBroken } from 'react-icons/fa'; // <-- Cambiado aquí
 import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/ProgressCard.css';
 
@@ -41,6 +43,15 @@ const ProgressCard = ({ userId }) => {
       icon: <FaGem />, 
       color: '#9C27B0',
       descriptionTemplate: '{value} cristales obtenidos'
+    },
+    // Añade la nueva estadística de derrotas
+    // **¡VERIFICA ESTE idTipo (6)!** Podría ser diferente en tu API.
+    6: {
+      id: 'derrotas',
+      title: 'Derrotas sufridas',
+      icon: <FaHeartBroken />,
+      color: '#F44336', // Un color rojo para derrotas
+      descriptionTemplate: '{value} veces has sido derrotado'
     }
   }
 
@@ -74,7 +85,7 @@ const ProgressCard = ({ userId }) => {
         const filteredData = data.filter(stat => stat.valor_TIME === null);
 
         // Transform API data to our component format
-        const transformedData = filteredData.map(stat => {
+        let transformedData = filteredData.map(stat => {
           const typeInfo = statTypeMapping[stat.idTipo];
 
           if (!typeInfo) return null;
@@ -89,6 +100,23 @@ const ProgressCard = ({ userId }) => {
           };
         }).filter(Boolean); // Remove null entries
 
+        // **Añadido: Asegurar que la estadística de derrotas exista**
+        const hasDefeatsStat = transformedData.some(stat => stat.id === 'derrotas');
+        if (!hasDefeatsStat) {
+          const defaultDefeatStat = statTypeMapping[6]; // Asumiendo que idTipo 6 es para derrotas
+          if (defaultDefeatStat) {
+            transformedData.push({
+              id: defaultDefeatStat.id,
+              title: defaultDefeatStat.title,
+              value: 0, // Valor por defecto
+              icon: defaultDefeatStat.icon,
+              color: defaultDefeatStat.color,
+              description: defaultDefeatStat.descriptionTemplate.replace('{value}', 0)
+            });
+          }
+        }
+        // **Fin del añadido**
+
         // Filter based on active filter
         if (activeFilter === 'todos') {
           setStatsData(transformedData);
@@ -98,7 +126,22 @@ const ProgressCard = ({ userId }) => {
       } catch (err) {
         console.error('Error fetching statistics:', err);
         setError('Failed to load statistics');
-        setStatsData([]);
+        setStatsData([]); // Limpia los datos en caso de error
+        // **Añadido: Mostrar tarjeta de derrotas con 0 en caso de error si el filtro es 'derrotas' o 'todos'**
+        if (activeFilter === 'derrotas' || activeFilter === 'todos') {
+            const defaultDefeatStat = statTypeMapping[6];
+            if (defaultDefeatStat) {
+                setStatsData([{ // Establece solo la tarjeta de derrotas por defecto
+                    id: defaultDefeatStat.id,
+                    title: defaultDefeatStat.title,
+                    value: 0,
+                    icon: defaultDefeatStat.icon,
+                    color: defaultDefeatStat.color,
+                    description: defaultDefeatStat.descriptionTemplate.replace('{value}', 0)
+                }]);
+            }
+        }
+        // **Fin del añadido**
       } finally {
         setLoading(false);
       }
@@ -106,7 +149,7 @@ const ProgressCard = ({ userId }) => {
 
     fetchData();
     // userId ya está en las dependencias, lo cual es correcto
-  }, [activeFilter, userId]);
+  }, [activeFilter, userId]); // Asegúrate de que statTypeMapping no necesite estar aquí si no cambia
 
   // Cerrar el menú al hacer clic fuera de él
   useEffect(() => {
@@ -129,6 +172,8 @@ const ProgressCard = ({ userId }) => {
       case 'torretas': return 'Torretas'
       case 'enemigos': return 'Enemigos'
       case 'cristales': return 'Cristales'
+      // Añade el caso para derrotas
+      case 'derrotas': return 'Derrotas'
       case 'todos': return 'Todas'
       default: return 'Estadísticas'
     }
@@ -224,58 +269,60 @@ const ProgressCard = ({ userId }) => {
                 >
                   Cristales recolectados
                 </motion.div>
+                {/* Añade la opción para Derrotas */}
+                <motion.div
+                  className={`dropdown-item ${activeFilter === 'derrotas' ? 'active' : ''}`}
+                  onClick={() => {
+                    setActiveFilter('derrotas')
+                    setIsMenuOpen(false)
+                  }}
+                  whileHover={{ backgroundColor: 'rgba(30, 30, 63, 0.7)' }}
+                >
+                  Derrotas sufridas
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
-      
-      <motion.div 
-        className="stats-wrapper"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.2 }}
-      >
-        {loading ? (
-          <div className="loading-message">Cargando estadísticas...</div>
-        ) : error ? (
-          <div className="error-message">{error}</div> // Muestra el mensaje de error
-        ) : statsData.length === 0 ? (
-          <div className="no-data-message">No hay estadísticas disponibles</div>
-        ) : (
-          statsData.map((stat, index) => (
-            <motion.div 
-              key={stat.id}
-              className="stat-card"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + (index * 0.1), duration: 0.3 }}
-              whileHover={{ 
-                y: -5,
-                boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)"
-              }}
-            >
-              <div className="stat-icon" style={{ backgroundColor: stat.color }}>
-                {stat.icon}
-              </div>
-              <div className="stat-content">
-                <h3 className="stat-title">{stat.title}</h3>
-                <motion.div 
-                  className="stat-value"
-                  initial={{ scale: 0.5 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2 + (index * 0.1), type: "spring", stiffness: 200 }}
-                >
-                  {stat.value}
-                </motion.div>
-                <div className="stat-description">{stat.description}</div>
-              </div>
-            </motion.div>
-          ))
-        )}
-      </motion.div>
-    </motion.div>
-  )
-}
 
-export default ProgressCard
+      {/* Muestra mensaje de carga o error */}
+      {loading && <p style={{ color: 'white', textAlign: 'center' }}>Cargando estadísticas...</p>}
+      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+
+      {/* Renderiza las tarjetas de estadísticas */}
+      {!loading && !error && (
+        <div className="stats-wrapper">
+          <AnimatePresence>
+            {statsData.map((stat) => (
+              <motion.div 
+                key={stat.id} 
+                className="stat-card"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                whileHover={{ 
+                  y: -3, 
+                  boxShadow: `0 6px 15px ${stat.color}33`, // Sombra sutil con el color del icono
+                  backgroundColor: 'rgba(255, 255, 255, 0.15)' // Un poco más claro al pasar el ratón
+                }}
+              >
+                <div className="stat-icon" style={{ backgroundColor: stat.color }}>
+                  {stat.icon}
+                </div>
+                <div className="stat-content">
+                  <h3 className="stat-title">{stat.title}</h3>
+                  <p className="stat-value">{stat.value}</p>
+                  <p className="stat-description">{stat.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
+export default ProgressCard;
