@@ -75,7 +75,7 @@ const findOrCreateUser = async (email) => {
       if (result.insertId) {
         // Devolver el usuario recién creado (podríamos hacer otra consulta o construir el objeto)
         console.log(`Nuevo usuario creado con ID: ${result.insertId}`);
-        return { id: result.insertId, email: email, gamertag: null }; // Devuelve el nuevo usuario
+        return { id: result.insertId, email: email}; // Devuelve el nuevo usuario
       } else {
         throw new Error('No se pudo crear el usuario en la base de datos.');
       }
