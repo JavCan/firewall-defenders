@@ -62,13 +62,23 @@ const ProgressCard = ({ userId }) => {
         console.warn('ProgressCard: userId no proporcionado.');
         setLoading(false); // Detiene la carga si no hay ID
         setError('Usuario no identificado'); // Muestra un error o mensaje
-        setStatsData([]); // Limpia los datos
+        // **Modificado: Crear tarjetas por defecto incluso sin userId**
+        const defaultStats = Object.values(statTypeMapping).map(typeInfo => ({
+            id: typeInfo.id,
+            title: typeInfo.title,
+            value: 0,
+            icon: typeInfo.icon,
+            color: typeInfo.color,
+            description: typeInfo.descriptionTemplate.replace('{value}', 0)
+        }));
+        setStatsData(activeFilter === 'todos' ? defaultStats : defaultStats.filter(stat => stat.id === activeFilter));
         return; // No continuar si no hay userId
     }
 
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      let finalStatsData = []; // Array para guardar los datos finales
 
       try {
         // Usa el userId recibido por props
@@ -87,9 +97,7 @@ const ProgressCard = ({ userId }) => {
         // Transform API data to our component format
         let transformedData = filteredData.map(stat => {
           const typeInfo = statTypeMapping[stat.idTipo];
-
           if (!typeInfo) return null;
-
           return {
             id: typeInfo.id,
             title: typeInfo.title,
@@ -100,49 +108,44 @@ const ProgressCard = ({ userId }) => {
           };
         }).filter(Boolean); // Remove null entries
 
-        // **Añadido: Asegurar que la estadística de derrotas exista**
-        const hasDefeatsStat = transformedData.some(stat => stat.id === 'derrotas');
-        if (!hasDefeatsStat) {
-          const defaultDefeatStat = statTypeMapping[6]; // Asumiendo que idTipo 6 es para derrotas
-          if (defaultDefeatStat) {
+        // **Modificado: Asegurar que todas las estadísticas existan, añadiendo las faltantes con valor 0**
+        const existingStatIds = new Set(transformedData.map(stat => stat.id));
+        Object.values(statTypeMapping).forEach(typeInfo => {
+          if (!existingStatIds.has(typeInfo.id)) {
             transformedData.push({
-              id: defaultDefeatStat.id,
-              title: defaultDefeatStat.title,
+              id: typeInfo.id,
+              title: typeInfo.title,
               value: 0, // Valor por defecto
-              icon: defaultDefeatStat.icon,
-              color: defaultDefeatStat.color,
-              description: defaultDefeatStat.descriptionTemplate.replace('{value}', 0)
+              icon: typeInfo.icon,
+              color: typeInfo.color,
+              description: typeInfo.descriptionTemplate.replace('{value}', 0)
             });
           }
-        }
-        // **Fin del añadido**
+        });
+        // **Fin de la modificación**
 
-        // Filter based on active filter
-        if (activeFilter === 'todos') {
-          setStatsData(transformedData);
-        } else {
-          setStatsData(transformedData.filter(stat => stat.id === activeFilter));
-        }
+        finalStatsData = transformedData; // Guarda los datos completos
+
       } catch (err) {
         console.error('Error fetching statistics:', err);
         setError('Failed to load statistics');
-        setStatsData([]); // Limpia los datos en caso de error
-        // **Añadido: Mostrar tarjeta de derrotas con 0 en caso de error si el filtro es 'derrotas' o 'todos'**
-        if (activeFilter === 'derrotas' || activeFilter === 'todos') {
-            const defaultDefeatStat = statTypeMapping[6];
-            if (defaultDefeatStat) {
-                setStatsData([{ // Establece solo la tarjeta de derrotas por defecto
-                    id: defaultDefeatStat.id,
-                    title: defaultDefeatStat.title,
-                    value: 0,
-                    icon: defaultDefeatStat.icon,
-                    color: defaultDefeatStat.color,
-                    description: defaultDefeatStat.descriptionTemplate.replace('{value}', 0)
-                }]);
-            }
-        }
-        // **Fin del añadido**
+        // **Modificado: Crear tarjetas por defecto para TODAS las estadísticas en caso de error**
+        finalStatsData = Object.values(statTypeMapping).map(typeInfo => ({
+            id: typeInfo.id,
+            title: typeInfo.title,
+            value: 0,
+            icon: typeInfo.icon,
+            color: typeInfo.color,
+            description: typeInfo.descriptionTemplate.replace('{value}', 0)
+        }));
+        // **Fin de la modificación**
       } finally {
+        // **Modificado: Aplicar el filtro DESPUÉS de asegurar todas las tarjetas o manejar el error**
+        if (activeFilter === 'todos') {
+          setStatsData(finalStatsData);
+        } else {
+          setStatsData(finalStatsData.filter(stat => stat.id === activeFilter));
+        }
         setLoading(false);
       }
     };
