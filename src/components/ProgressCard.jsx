@@ -71,7 +71,7 @@ const ProgressCard = ({ userId }) => {
         console.log(`Datos de estadísticas recibidos para userId ${userId}:`, data); // Para depuración
 
         // Filter out time-based statistics (those with non-zero valor_TIME)
-        const filteredData = data.filter(stat => stat.valor_TIME === "00:00:00");
+        const filteredData = data.filter(stat => stat.valor_TIME === null);
 
         // Transform API data to our component format
         const transformedData = filteredData.map(stat => {
