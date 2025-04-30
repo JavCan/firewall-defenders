@@ -280,7 +280,7 @@ export default function LoginForm({ onLogin }) { // Removed isLoading and error 
       <FormSection>
         <h2>Inicia sesión</h2>
         <SmallText>
-          ¿No eres usuario de Aulify?<a href="#">Únete→</a>
+          ¿No eres usuario de Aulify?<a href="https://www.aulify.mx/sign_up" target='_blank'>Únete→</a>
         </SmallText>
 
         {/* Display the local error state */}
