@@ -96,20 +96,10 @@
   width: 6px;
 }
 
-.stats-wrapper::-webkit-scrollbar-track {
-  background: rgba(30, 30, 63, 0.2);
-  border-radius: 10px;
-  margin: 8px 0;
-}
-
 .stats-wrapper::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   transition: background 0.3s ease;
-}
-
-.stats-wrapper::-webkit-scrollbar-thumb:hover {
-  background: rgba(2, 190, 239, 0.6);
 }
 
 .stat-card {

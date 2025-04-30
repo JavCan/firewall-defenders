@@ -108,19 +108,10 @@
 
 /* Add custom scrollbar styling */
 .stickers-grid::-webkit-scrollbar {
-  width: 8px;
-}
-
-.stickers-grid::-webkit-scrollbar-track {
-  background: rgba(30, 30, 63, 0.3);
-  border-radius: 10px;
+  width: 6px;
 }
 
 .stickers-grid::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.5);
   border-radius: 10px;
-}
-
-.stickers-grid::-webkit-scrollbar-thumb:hover {
-  background: rgba(111, 66, 193, 0.7);
 }
