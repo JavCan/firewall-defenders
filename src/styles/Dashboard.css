@@ -46,6 +46,8 @@
   color: white;
   font-size: 20px;
   cursor: pointer;
+  position: relative; /* Needed for z-index to work reliably */
+  z-index: 1; /* Ensure icon is above sibling elements if any */
   transition: all 0.2s ease;
 }
 
@@ -57,13 +59,15 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Estilos existentes para .sidebar-icon y .sidebar-icon.active se mantienen */
+
 .sidebar-icon:hover:not(.active) {
   background-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
 
 .sidebar-icon.active:hover {
-  background-color: #E83E52;
+  background-color: #E83E52; /* O el color activo que uses */
   transform: translateY(-2px);
 }
 
@@ -96,8 +100,13 @@
   }
 }
 
-
-/* Add this new class for the bottom icon */
+/* Clase para el icono en la parte inferior */
 .sidebar-icon-bottom {
-  margin-top: auto;
+  margin-top: auto; /* Empuja el icono al fondo */
+  rotate: 180deg;
+}
+
+.sidebar-icon-bottom:hover {
+   background-color: rgba(255, 107, 107, 0.2); /* Fondo rojo claro al pasar el ratón */
+   color: #ff4d4d; /* Rojo más intenso al pasar el ratón */
 }
