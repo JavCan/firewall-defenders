@@ -9,8 +9,22 @@ import {
   Title,
   Tooltip,
   Legend,
+  // --- Añadir: Importar Filler ---
+  Filler,
 } from 'chart.js';
 import '../styles/MonitoringCard2.css'; // Importa los estilos CSS
+
+// --- Añadir: Registrar Filler ---
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler // Registrar el plugin
+);
 
 // Registrar los componentes necesarios de Chart.js para Line chart
 ChartJS.register(
@@ -30,68 +44,133 @@ const MonitoringCard2 = ({ userId }) => {
     datasets: [],
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // Estado para manejar errores
 
   useEffect(() => {
-    // --- Simulación de carga de datos ---
-    // En una aplicación real, aquí harías una llamada a tu API
-    // para obtener las monedas gastadas por nivel para el userId.
-    // Ejemplo: fetch(`/api/estadistica/usuario/${userId}/monedas-por-nivel`)
     const fetchCoinsPerLevel = async () => {
+      // Solo intentar cargar si tenemos un userId
+      if (!userId) {
+        setLoading(false);
+        setError("ID de usuario no disponible.");
+        console.log("MonitoringCard2: No userId provided, skipping fetch.");
+        return;
+      }
+
       setLoading(true);
+      setError(null); // Limpiar errores previos
+
+      // Obtener el token JWT de localStorage (o donde lo almacenes)
+      const token = localStorage.getItem('jwtToken'); // Asegúrate que la clave sea correcta
+
+      if (!token) {
+          setLoading(false);
+          setError("No autenticado. Token no encontrado.");
+          console.error("MonitoringCard2: JWT Token not found in localStorage.");
+          return;
+      }
+
       try {
-        // Simulación: Reemplaza esto con tu llamada API real
-        await new Promise(resolve => setTimeout(resolve, 600)); // Simular delay de red
-        // Datos de ejemplo: monedas gastadas en cada nivel (13 niveles)
-        const coinsData = [50, 75, 120, 90, 150, 200, 180, 250, 300, 280, 350, 400, 320];
+        // --- Llamada real a la API ---
+        const response = await fetch(`/api/estadistica/usuario/${userId}/monedas-por-nivel`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Incluir el token JWT
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+          // Manejar respuestas no exitosas (ej. 401, 403, 404, 500)
+          const errorData = await response.json().catch(() => ({ message: 'Error desconocido al obtener datos.' }));
+          throw new Error(`Error ${response.status}: ${errorData.message || response.statusText}`);
+        }
+
+        const data = await response.json(); // data es ahora un array de objetos: [{ nivel: 1, totalMonedasGastadas: '225' }, ...]
+
+        // Validar que recibimos un array
+        if (!Array.isArray(data)) {
+            console.error("Formato de datos inesperado recibido de la API:", data);
+            throw new Error("Formato de datos inesperado recibido de la API.");
+        }
+
+        // --- Procesar el array de objetos ---
+        // 1. Crear un mapa para acceso rápido a las monedas por nivel
+        const coinsMap = new Map();
+        data.forEach(item => {
+            // Asegurarse de que nivel y totalMonedasGastadas existen y son válidos
+            if (item && typeof item.nivel === 'number' && item.totalMonedasGastadas !== undefined) {
+                // Convertir totalMonedasGastadas a número
+                const coins = parseInt(item.totalMonedasGastadas, 10);
+                // Guardar en el mapa si la conversión es exitosa
+                if (!isNaN(coins)) {
+                    coinsMap.set(item.nivel, coins);
+                } else {
+                    console.warn(`Valor inválido para totalMonedasGastadas en nivel ${item.nivel}:`, item.totalMonedasGastadas);
+                    coinsMap.set(item.nivel, 0); // O manejar como prefieras
+                }
+            } else {
+                 console.warn("Item inválido o incompleto recibido de la API:", item);
+            }
+        });
+
+        // 2. Crear el array final de datos para la gráfica (13 niveles)
+        const finalCoinsData = Array.from({ length: 13 }, (_, i) => {
+            const nivel = i + 1;
+            // Obtener el valor del mapa o usar 0 si no existe
+            return coinsMap.get(nivel) || 0;
+        });
+        // --- Fin del procesamiento ---
+
 
         setChartData({
           labels: Array.from({ length: 13 }, (_, i) => `Nivel ${i + 1}`),
           datasets: [
             {
               label: 'Monedas Gastadas',
-              data: coinsData,
-              fill: true, // Rellenar área bajo la línea
-              // --- Cambios de Estilo ---
-              backgroundColor: (context) => { // Usar función para gradiente
+              data: finalCoinsData, // Usar los datos procesados
+              fill: true,
+              backgroundColor: (context) => {
                 const ctx = context.chart.ctx;
-                const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.height * 0.6); // Ajusta la altura del gradiente
-                gradient.addColorStop(0, 'rgba(2, 190, 239, 0.5)'); // Inicio del gradiente
-                gradient.addColorStop(1, 'rgba(2, 190, 239, 0.05)'); // Fin del gradiente (más transparente)
+                const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.height * 0.6);
+                gradient.addColorStop(0, 'rgba(2, 190, 239, 0.5)');
+                gradient.addColorStop(1, 'rgba(2, 190, 239, 0.05)');
                 return gradient;
               },
-              borderColor: 'rgb(0, 170, 220)', // Un azul vibrante para la línea
-              tension: 0.3, // Línea un poco más suave
+              borderColor: 'rgb(0, 170, 220)',
+              tension: 0.3,
               pointBackgroundColor: 'rgb(0, 170, 220)',
               pointBorderColor: '#fff',
-              pointRadius: 4, // Puntos un poco más grandes
-              pointHoverRadius: 6, // Puntos más grandes al pasar el ratón
+              pointRadius: 4,
+              pointHoverRadius: 6,
               pointHoverBackgroundColor: '#fff',
               pointHoverBorderColor: 'rgb(0, 170, 220)'
-              // --- Fin Cambios de Estilo ---
             },
           ],
         });
       } catch (error) {
         console.error("Error fetching coins per level:", error);
-        // Manejar el error
+        setError(error.message || "Error al cargar los datos de monedas.");
+        setChartData({ // Limpiar datos en caso de error
+            labels: Array.from({ length: 13 }, (_, i) => `Nivel ${i + 1}`),
+            datasets: [],
+        });
       } finally {
         setLoading(false);
       }
     };
 
-    // Por ahora, llamamos directamente para mostrar la gráfica con datos simulados
-    // Deberías condicionar esto a la existencia de `userId` en un caso real
     fetchCoinsPerLevel();
 
   }, [userId]); // Vuelve a cargar si cambia el userId
 
+  // ... el resto del componente (options, return) permanece igual ...
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    // Añadir configuración de interacción
     interaction: {
-      mode: 'index', // Encuentra elementos en el mismo índice (verticalmente)
-      intersect: false, // Muestra tooltip aunque no se esté directamente sobre el punto
+      mode: 'index',
+      intersect: false,
     },
     plugins: {
       legend: {
@@ -111,7 +190,6 @@ const MonitoringCard2 = ({ userId }) => {
               label += ': ';
             }
             if (context.parsed.y !== null) {
-              // Añadir símbolo de moneda o texto "monedas"
               label += context.parsed.y + ' monedas';
             }
             return label;
@@ -123,27 +201,28 @@ const MonitoringCard2 = ({ userId }) => {
       y: {
         beginAtZero: true,
         ticks: {
-          color: 'rgba(255, 255, 255, 0.8)', // Un poco más visible
-          // Podrías añadir un callback para formatear los números si son muy grandes
+          color: 'rgba(255, 255, 255, 0.8)',
         },
         grid: {
-          color: 'rgba(255, 255, 255, 0.08)', // Líneas de cuadrícula más sutiles
+          color: 'rgba(255, 255, 255, 0.08)',
         },
-        title: { // Título del eje Y
+        title: {
           display: true,
-          color: 'rgba(255, 255, 255, 0.8)', // Un poco más visible
+          text: 'Monedas', // Añadir texto al título del eje Y
+          color: 'rgba(255, 255, 255, 0.8)',
         }
       },
       x: {
         ticks: {
-          color: 'rgba(255, 255, 255, 0.8)', // Un poco más visible
+          color: 'rgba(255, 255, 255, 0.8)',
         },
         grid: {
-          color: 'rgba(255, 255, 255, 0.08)', // Líneas de cuadrícula más sutiles
+          color: 'rgba(255, 255, 255, 0.08)',
         },
-         title: { // Título del eje X
+         title: {
           display: true,
-          color: 'rgba(255, 255, 255, 0.8)', // Un poco más visible
+          text: 'Nivel', // Añadir texto al título del eje X
+          color: 'rgba(255, 255, 255, 0.8)',
         }
       },
     },
@@ -155,10 +234,12 @@ const MonitoringCard2 = ({ userId }) => {
       <div className="chart-container" style={{ height: '250px', position: 'relative'}}>
         {loading ? (
           <p>Cargando datos del gráfico...</p>
-        ) : chartData.datasets.length > 0 ? (
+        ) : error ? ( // Mostrar mensaje de error si existe
+          <p className="error-message">{error}</p>
+        ) : chartData.datasets.length > 0 && chartData.datasets[0].data.length > 0 ? ( // Asegurarse que hay datos
           <Line options={options} data={chartData} />
         ) : (
-          <p>No hay datos de monedas gastadas disponibles.</p>
+          <p>No hay datos de monedas gastadas disponibles para mostrar.</p> // Mensaje si no hay datos o error
         )}
       </div>
     </div>

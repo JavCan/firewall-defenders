@@ -20,8 +20,22 @@ const GameTimeCard = ({ userId }) => {
     const fetchGameTime = async () => {
       setLoading(true); // Inicia la carga
       try {
+        // --- Añadir obtención del token ---
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+          throw new Error('Usuario no autenticado.');
+        }
+        // --- Fin obtención del token ---
+
         // Usa el userId recibido por props
-        const response = await fetch(`/api/estadistica/usuario/${userId}/tiempo`);
+        const response = await fetch(`/api/estadistica/usuario/${userId}/tiempo`, {
+          // --- Añadir cabeceras ---
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+          // --- Fin añadir cabeceras ---
+        });
 
         if (!response.ok) {
           // Lanza un error más descriptivo

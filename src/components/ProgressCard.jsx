@@ -81,11 +81,27 @@ const ProgressCard = ({ userId }) => {
       let finalStatsData = []; // Array para guardar los datos finales
 
       try {
+        // --- Añadir obtención del token ---
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+          throw new Error('Usuario no autenticado.');
+        }
+        // --- Fin obtención del token ---
+
         // Usa el userId recibido por props
-        const response = await fetch(`/api/estadistica/usuario/${userId}`);
+        const response = await fetch(`/api/estadistica/usuario/${userId}`, {
+           // --- Añadir cabeceras ---
+           headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+          // --- Fin añadir cabeceras ---
+        });
 
         if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
+           // Intenta leer el mensaje de error del cuerpo si existe
+           const errorData = await response.json().catch(() => ({})); // Intenta parsear JSON, si falla, objeto vacío
+           throw new Error(`Error ${response.status}: ${errorData.mensaje || response.statusText}`);
         }
 
         const data = await response.json();
@@ -128,7 +144,8 @@ const ProgressCard = ({ userId }) => {
 
       } catch (err) {
         console.error('Error fetching statistics:', err);
-        setError('Failed to load statistics');
+        // --- Modificación: Usar err.message para un error más específico ---
+        setError(err.message || 'Failed to load statistics');
         // **Modificado: Crear tarjetas por defecto para TODAS las estadísticas en caso de error**
         finalStatsData = Object.values(statTypeMapping).map(typeInfo => ({
             id: typeInfo.id,
