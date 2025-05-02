@@ -46,32 +46,19 @@ const GameTimeCard = ({ userId }) => {
         const data = await response.json();
         console.log(`Datos de tiempo recibidos para userId ${userId}:`, data); // Para depuración
 
-        // --- INICIO DE LA MODIFICACIÓN ---
-        // Verificar si 'valor_TIME' existe en la respuesta
-        if (data && data.valor_TIME !== undefined && typeof data.valor_TIME === 'string') {
-           // Formatear el tiempo de HH:MM:SS a "HH h MM m"
-           const timeParts = data.valor_TIME.split(':');
-           let formattedDisplayTime = 'Formato inválido';
-           if (timeParts.length === 3) {
-             const hours = parseInt(timeParts[0], 10);
-             const minutes = parseInt(timeParts[1], 10);
-             // Puedes ajustar si quieres mostrar segundos también
-             formattedDisplayTime = `${hours} h ${minutes} m`;
-           } else {
-             console.warn('El formato de valor_TIME no es HH:MM:SS:', data.valor_TIME);
-             // Opcional: usar el valor crudo si no se puede formatear
-             // formattedDisplayTime = data.valor_TIME;
-           }
-
+        // --- INICIO DE LA NUEVA MODIFICACIÓN ---
+        // Verificar si 'tiempoFormateado' existe y es un string en la respuesta
+        if (data && data.tiempoFormateado !== undefined && typeof data.tiempoFormateado === 'string') {
+           // Usar directamente el valor formateado del backend
            setTimeData({
-             formattedTime: formattedDisplayTime // Usar el tiempo formateado
+             formattedTime: data.tiempoFormateado
            });
         } else {
-           // Si 'valor_TIME' no viene o no es string, considera un valor por defecto
-           console.warn('Respuesta inesperada o campo valor_TIME ausente/inválido:', data);
+           // Si 'tiempoFormateado' no viene o no es string, considera un valor por defecto
+           console.warn('Respuesta inesperada o campo tiempoFormateado ausente/inválido:', data); // Mensaje actualizado
            setTimeData({ formattedTime: '0 h 0 m' }); // O 'Error' o 'N/A'
         }
-        // --- FIN DE LA MODIFICACIÓN ---
+        // --- FIN DE LA NUEVA MODIFICACIÓN ---
 
       } catch (error) {
         console.error('Error fetching game time:', error);
