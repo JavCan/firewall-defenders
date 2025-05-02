@@ -85,7 +85,7 @@ const MonitoringCard2 = ({ userId }) => {
           throw new Error(`Error ${response.status}: ${errorData.message || response.statusText}`);
         }
 
-        const data = await response.json(); // data es ahora un array de objetos: [{ nivel: 1, totalMonedasGastadas: '225' }, ...]
+        const data = await response.json(); // data debería ser [{ nivel: 1, totalMonedasGastadas: '225' }, ...]
 
         // Validar que recibimos un array
         if (!Array.isArray(data)) {
@@ -94,10 +94,9 @@ const MonitoringCard2 = ({ userId }) => {
         }
 
         // --- Procesar el array de objetos ---
-        // 1. Crear un mapa para acceso rápido a las monedas por nivel
         const coinsMap = new Map();
         data.forEach(item => {
-            // Asegurarse de que nivel y totalMonedasGastadas existen y son válidos
+            // Esta condición comprueba si 'item' es un objeto válido con las propiedades esperadas
             if (item && typeof item.nivel === 'number' && item.totalMonedasGastadas !== undefined) {
                 // Convertir totalMonedasGastadas a número
                 const coins = parseInt(item.totalMonedasGastadas, 10);
@@ -109,6 +108,8 @@ const MonitoringCard2 = ({ userId }) => {
                     coinsMap.set(item.nivel, 0); // O manejar como prefieras
                 }
             } else {
+                 // Si la condición de arriba falla, se ejecuta esto.
+                 // Si 'item' es 0, la condición falla porque 0 no tiene la propiedad 'nivel'.
                  console.warn("Item inválido o incompleto recibido de la API:", item);
             }
         });
