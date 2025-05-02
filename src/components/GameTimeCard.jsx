@@ -46,16 +46,33 @@ const GameTimeCard = ({ userId }) => {
         const data = await response.json();
         console.log(`Datos de tiempo recibidos para userId ${userId}:`, data); // Para depuración
 
-        // Simplifica la lógica de asignación, asumiendo que el backend siempre devuelve 'tiempoFormateado'
-        if (data && data.tiempoFormateado !== undefined) {
+        // --- INICIO DE LA MODIFICACIÓN ---
+        // Verificar si 'valor_TIME' existe en la respuesta
+        if (data && data.valor_TIME !== undefined && typeof data.valor_TIME === 'string') {
+           // Formatear el tiempo de HH:MM:SS a "HH h MM m"
+           const timeParts = data.valor_TIME.split(':');
+           let formattedDisplayTime = 'Formato inválido';
+           if (timeParts.length === 3) {
+             const hours = parseInt(timeParts[0], 10);
+             const minutes = parseInt(timeParts[1], 10);
+             // Puedes ajustar si quieres mostrar segundos también
+             formattedDisplayTime = `${hours} h ${minutes} m`;
+           } else {
+             console.warn('El formato de valor_TIME no es HH:MM:SS:', data.valor_TIME);
+             // Opcional: usar el valor crudo si no se puede formatear
+             // formattedDisplayTime = data.valor_TIME;
+           }
+
            setTimeData({
-             formattedTime: data.tiempoFormateado
+             formattedTime: formattedDisplayTime // Usar el tiempo formateado
            });
         } else {
-           // Si 'tiempoFormateado' no viene, considera un valor por defecto o maneja el caso
-           console.warn('Respuesta inesperada del backend para tiempo:', data);
+           // Si 'valor_TIME' no viene o no es string, considera un valor por defecto
+           console.warn('Respuesta inesperada o campo valor_TIME ausente/inválido:', data);
            setTimeData({ formattedTime: '0 h 0 m' }); // O 'Error' o 'N/A'
         }
+        // --- FIN DE LA MODIFICACIÓN ---
+
       } catch (error) {
         console.error('Error fetching game time:', error);
         setTimeData({ formattedTime: 'Error' }); // Muestra un error en la UI
