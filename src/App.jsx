@@ -14,6 +14,10 @@ function App() {
 
     // Verifica los datos iniciales del login
     if (loginResponseData && loginResponseData.token && loginResponseData.email && loginResponseData.jwtToken) { // Asegúrate que jwtToken exista
+      // *** Añadir esta línea para guardar el token JWT ***
+      localStorage.setItem('jwtToken', loginResponseData.jwtToken);
+      // *** Fin de la línea añadida ***
+
       setIsAuthenticated(true);
       // Guarda la información básica inicial y los tokens
       const basicUserInfo = {
@@ -73,7 +77,7 @@ function App() {
         }
 
         // Opcional: guardar token en localStorage si lo usas para futuras llamadas API
-        // localStorage.setItem('authToken', loginResponseData.jwtToken); // Guarda el JWT
+        // localStorage.setItem('authToken', loginResponseData.jwtToken); // Guarda el JWT <-- Esta línea estaba comentada, la hemos añadido arriba
 
       } catch (error) {
         console.error('Falló la obtención de detalles completos del usuario:', error);
@@ -81,6 +85,7 @@ function App() {
         // Ejemplo:
         // setIsAuthenticated(false);
         // setUser(null);
+        // localStorage.removeItem('jwtToken'); // Limpiar token si falla la obtención de detalles
         // alert('No se pudieron cargar los detalles completos del usuario. Inténtalo de nuevo.');
       }
 
@@ -91,13 +96,14 @@ function App() {
       console.error('Datos de login iniciales inesperados o incompletos recibidos en App:', loginResponseData);
       setIsAuthenticated(false);
       setUser(null);
+      localStorage.removeItem('jwtToken'); // Asegúrate de limpiar el token si el login inicial falla
     }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUser(null);
-    // localStorage.removeItem('authToken'); // Limpia el token si lo guardaste
+    localStorage.removeItem('jwtToken'); // Limpia el token al cerrar sesión
   };
 
   return (

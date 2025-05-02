@@ -82,7 +82,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  grid-template-areas: 
+  grid-template-areas:
     "game-time stickers"
     "progress stickers";
   gap: 16px;
@@ -90,14 +90,29 @@
   height: 100%;
 }
 
+/* Nuevos estilos para la vista de monitoreo */
+.main-content.monitoreo-view {
+  grid-template-columns: 1fr; /* Una sola columna */
+  grid-template-rows: auto auto; /* Filas automáticas */
+  grid-template-areas: none; /* Resetea las áreas si no las usas */
+  align-content: start; /* Alinea el contenido al inicio si hay espacio extra */
+}
+
+
 @media (max-width: 1200px) {
   .main-content {
     grid-template-columns: 1fr;
-    grid-template-areas: 
+    grid-template-areas:
       "game-time"
       "stickers"
       "progress";
   }
+  /* Asegúrate que la vista monitoreo también funcione en pantallas pequeñas */
+   .main-content.monitoreo-view {
+     grid-template-columns: 1fr;
+     grid-template-rows: auto auto;
+     grid-template-areas: none;
+   }
 }
 
 /* Clase para el icono en la parte inferior */

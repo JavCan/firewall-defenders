@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 // Importa FaCoins
 import { FaHome, FaChartBar, FaCoins } from 'react-icons/fa'
 import { motion } from 'framer-motion'
@@ -11,8 +11,9 @@ const aLogo = [
 
 // Modifica la desestructuración para recibir 'monedas' directamente
 // y establece un valor por defecto para 'monedas' si no se proporciona.
-const Topbar = ({ user = { email: 'correo@ejemplo.com', name: 'Usuario' }, monedas = 0 }) => {
-  const [activeTab, setActiveTab] = useState('inicio')
+// Modifica las props para recibir activeTab y onTabChange
+const Topbar = ({ user = { email: 'correo@ejemplo.com', name: 'Usuario' }, monedas = 0, activeTab, onTabChange }) => {
+  // Quitamos el estado local: const [activeTab, setActiveTab] = useState('inicio')
 
   // Extrae solo name y email del usuario. 'monedas' ya se recibe como prop.
   const { name, email } = user;
@@ -35,20 +36,24 @@ const Topbar = ({ user = { email: 'correo@ejemplo.com', name: 'Usuario' }, moned
           <img src={a} alt="ã" className="alogo" />
         </motion.div>
         <div className="nav-buttons">
-          <motion.button 
+          {/* Usamos onTabChange para actualizar el estado en Dashboard */}
+          <motion.button
             className={`nav-button ${activeTab === 'inicio' ? 'active' : ''}`}
-            onClick={() => setActiveTab('inicio')}
+            onClick={() => onTabChange('inicio')} // Llama a la función del padre
             whileHover={{ scale: 1.03, y: -1 }}
             whileTap={{ scale: 0.97 }}
           >
             <FaHome /> Inicio
           </motion.button>
-          {/* <button 
+          {/* Usamos onTabChange para actualizar el estado en Dashboard */}
+          <motion.button // Cambiado a motion.button para consistencia
             className={`nav-button ${activeTab === 'monitoreo' ? 'active' : ''}`}
-            onClick={() => setActiveTab('monitoreo')}
+            onClick={() => onTabChange('monitoreo')} // Llama a la función del padre
+            whileHover={{ scale: 1.03, y: -1 }} // Añadido hover/tap
+            whileTap={{ scale: 0.97 }}          // Añadido hover/tap
           >
             <FaChartBar /> Monitoreo
-          </button> */}
+          </motion.button>
         </div>
       </div>
       
