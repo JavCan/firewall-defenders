@@ -104,7 +104,7 @@ const getEstadisticaUsuario = async (req, res) => {
 
     // Opcional: Si quieres asegurarte de que solo devuelves UNA fila por idTipo,
     // incluso si hay empates en valor_INT, puedes procesar 'rows' aquí.
-    // Por ejemplo, podrías crear un Map para quedarte con la primera que encuentres por idTipo.
+    // Podrías crear un Map para quedarte con la primera que encuentres por idTipo.
     const estadisticasUnicas = new Map();
     rows.forEach(row => {
         if (!estadisticasUnicas.has(row.idTipo)) {
@@ -387,13 +387,99 @@ const getTiempoJuegoSemanalUsuario = async (req, res) => {
 // --------------------------------------------------------------------
 
 
-export {
-    getEstadistica,
-    getEstadisticaPorTipo,
-    getEstadisticaUsuario,
-    getTiempoJuegoUsuario,
-    getEstadisticaUsuarioPorTipo,
-    getTiposEstadistica,
-    upsertEstadistica, // <-- Función existente
-    getTiempoJuegoSemanalUsuario // <-- Exportar la nueva función
+// ... existing code ...
+
+// ------- NUEVA FUNCIÓN: Obtener Monedas Gastadas por Nivel (para MonitoringCard2) -------
+const getMonedasGastadasPorNivelUsuario = async (req, res) => {
+  // Obtener idUsuario del token JWT (añadido por verifyJWT middleware)
+  const idUsuario = req.user?.userId;
+
+  if (!idUsuario) {
+    return res.status(401).json({ error: 'Usuario no autenticado o ID no encontrado en el token.' });
   }
+
+  console.log(`[Monedas Nivel] Solicitud para usuario ID: ${idUsuario}`);
+
+  try {
+    // --- CORRECCIÓN: Ya no necesitamos determinar maxLevel dinámicamente ---
+    // El frontend espera explícitamente 13 niveles.
+
+    // Paso 1: Consultar las monedas gastadas por nivel para el usuario
+    // --- CORRECCIÓN: Cambiar alias SQL a totalMonedasGastadas ---
+    const sql = `
+      SELECT
+          idNivel,
+          SUM(cantidad) AS totalMonedasGastadas 
+      FROM
+          transaccion_monedas
+      WHERE
+          idUsuario = ?
+          AND idNivel IS NOT NULL 
+          AND idNivel BETWEEN 1 AND 13 -- Opcional: Filtrar ya en la consulta por los niveles relevantes
+      GROUP BY
+          idNivel
+      ORDER BY
+          idNivel;
+    `;
+
+    const [rows] = await pool.query(sql, [idUsuario]);
+
+    // Paso 2: Crear un mapa para almacenar los resultados de la consulta
+    const monedasPorNivelMap = new Map();
+    rows.forEach(row => {
+      // Asegurarse de que idNivel es un número y totalMonedasGastadas existe
+      if (row.idNivel != null && row.totalMonedasGastadas != null) {
+         // Convertir totalMonedasGastadas a número (SUM puede devolver string o number)
+         const monedas = parseInt(row.totalMonedasGastadas, 10);
+         if (!isNaN(monedas)) {
+            monedasPorNivelMap.set(row.idNivel, monedas);
+         } else {
+             // Si la conversión falla, registrar advertencia y usar 0
+             console.warn(`[Monedas Nivel] Valor inválido para totalMonedasGastadas en nivel ${row.idNivel}: ${row.totalMonedasGastadas}. Usando 0.`);
+             monedasPorNivelMap.set(row.idNivel, 0);
+         }
+      } else {
+          console.warn(`[Monedas Nivel] Fila inválida recibida de la BD:`, row);
+      }
+    });
+
+    // Paso 3: Crear el array final con 13 niveles, usando el mapa o 0 por defecto
+    // --- CORRECCIÓN: Siempre generar 13 niveles ---
+    const numeroDeNiveles = 13; // Definido explícitamente
+    const resultadoFinal = Array.from({ length: numeroDeNiveles }, (_, i) => {
+      const nivel = i + 1;
+      return {
+        nivel: nivel,
+        // Obtener del mapa o devolver 0 si no existe entrada para ese nivel
+        totalMonedasGastadas: monedasPorNivelMap.get(nivel) || 0
+      };
+    });
+
+    console.log(`[Monedas Nivel] Datos enviados para usuario ID ${idUsuario}:`, resultadoFinal);
+
+    // Devolver siempre un array (puede estar lleno de objetos con valor 0 si no hay datos)
+    res.json(resultadoFinal);
+
+  } catch (error) {
+    console.error(`[Monedas Nivel] Error al obtener monedas gastadas por nivel para usuario ID ${idUsuario}:`, error);
+    // --- CORRECCIÓN: Devolver array vacío en caso de error grave ---
+    // O podrías devolver un array de 13 niveles con 0 monedas si prefieres que el gráfico no muestre error
+    // Por consistencia con la petición original, devolvemos array vacío en error.
+    res.status(500).json([]); // Devolver array vacío en lugar de objeto de error
+  }
+};
+// --------------------------------------------------------------------
+
+// ... existing code ...
+
+export {
+  getEstadistica,
+  getEstadisticaPorTipo,
+  getEstadisticaUsuario,
+  getTiempoJuegoUsuario,
+  getEstadisticaUsuarioPorTipo,
+  getTiposEstadistica,
+  upsertEstadistica,
+  getTiempoJuegoSemanalUsuario,
+  getMonedasGastadasPorNivelUsuario // Asegúrate que está exportada
+};

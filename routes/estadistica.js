@@ -7,9 +7,10 @@ import {
   getEstadisticaUsuarioPorTipo,
   getTiposEstadistica,
   upsertEstadistica,
-  getTiempoJuegoSemanalUsuario // <-- Importar la nueva función
+  getTiempoJuegoSemanalUsuario,
+  getMonedasGastadasPorNivelUsuario // <-- Importar la nueva función
 } from '../controllers/estadistica.controller.js'
-import { verifyJWT } from '../middleware/jwt.middleware.js'; // <-- Importar middleware JWT
+import { verifyJWT } from '../middleware/jwt.middleware.js';
 
 const router = express.Router()
 
@@ -29,6 +30,10 @@ router.get('/api/estadistica/usuario/:idUsuario/tipo/:idTipo', verifyJWT, getEst
 // pero mantenerlo puede ser útil para administradores en el futuro (con lógica de permisos adicional).
 // Por ahora, lo dejamos pero usamos el token ID en el controller.
 router.get('/api/estadistica/usuario/:idUsuario/tiempo-semanal', verifyJWT, getTiempoJuegoSemanalUsuario);
+
+// --- NUEVA RUTA GET para obtener monedas gastadas por nivel ---
+// Protegida por JWT. El idUsuario se obtiene del token.
+router.get('/api/estadistica/usuario/:idUsuario/monedas-por-nivel', verifyJWT, getMonedasGastadasPorNivelUsuario);
 
 
 // --- RUTA POST existente para crear/actualizar estadísticas ---
