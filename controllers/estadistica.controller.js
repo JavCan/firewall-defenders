@@ -217,8 +217,6 @@ const getTiempoJuegoUsuario = async (req, res) => {
   }
 };
 
-// ... existing code ...
-
 // ------- NUEVA FUNCIÓN: Insertar o Actualizar Estadística (UPSERT) -------
 const upsertEstadistica = async (req, res) => {
   // 1. Obtener idUsuario del token JWT (añadido por verifyJWT middleware)
@@ -324,7 +322,70 @@ const upsertEstadistica = async (req, res) => {
 };
 // --------------------------------------------------------------------
 
-// ... existing code ...
+
+// ------- NUEVA FUNCIÓN: Obtener Tiempo de Juego Semanal (para MonitoringCard1) -------
+const getTiempoJuegoSemanalUsuario = async (req, res) => {
+  // Obtener idUsuario del token JWT (añadido por verifyJWT middleware)
+  // Usamos req.user.userId en lugar de req.params.idUsuario por seguridad,
+  // así un usuario solo puede ver sus propios datos.
+  const idUsuario = req.user?.userId;
+
+  if (!idUsuario) {
+    // Esto no debería ocurrir si verifyJWT funciona correctamente, pero es una buena verificación.
+    return res.status(401).json({ error: 'Usuario no autenticado o ID no encontrado en el token.' });
+  }
+
+  console.log(`[Tiempo Semanal] Solicitud para usuario ID: ${idUsuario}`);
+
+  try {
+    // Consulta SQL para obtener la suma de segundos jugados por día de la semana actual (Lunes=0 a Domingo=6)
+    // YEARWEEK(fecha, 1) considera que la semana empieza en Lunes.
+    // COALESCE se usa por si duracion_segundos es NULL, calcularlo con TIMESTAMPDIFF.
+    // Se filtran solo sesiones completadas (con fecha_fin o duracion_segundos).
+    const sql = `
+      SELECT
+          WEEKDAY(fecha_inicio) AS dia_semana, -- 0=Lunes, 1=Martes, ..., 6=Domingo
+          SUM(COALESCE(duracion_segundos, TIMESTAMPDIFF(SECOND, fecha_inicio, fecha_fin))) AS segundos_totales_dia
+      FROM
+          sesion_juego
+      WHERE
+          idUsuario = ?
+          AND YEARWEEK(fecha_inicio, 1) = YEARWEEK(CURDATE(), 1) -- Filtra por la semana actual (Lunes-Domingo)
+          AND (duracion_segundos IS NOT NULL OR fecha_fin IS NOT NULL) -- Asegura que la sesión haya terminado
+      GROUP BY
+          dia_semana
+      ORDER BY
+          dia_semana;
+    `;
+
+    const [rows] = await pool.query(sql, [idUsuario]);
+
+    // Inicializar un array para los 7 días de la semana (Lunes a Domingo) con 0 horas
+    const horasSemanales = Array(7).fill(0);
+
+    // Llenar el array con los datos obtenidos de la base de datos
+    rows.forEach(row => {
+      const diaIndex = row.dia_semana; // 0 para Lunes, ..., 6 para Domingo
+      const segundos = parseInt(row.segundos_totales_dia, 10);
+
+      if (diaIndex >= 0 && diaIndex < 7 && !isNaN(segundos)) {
+        // Convertir segundos a horas (con decimales)
+        horasSemanales[diaIndex] = segundos / 3600;
+      }
+    });
+
+    console.log(`[Tiempo Semanal] Datos calculados para usuario ID ${idUsuario}:`, horasSemanales);
+
+    // Devolver el array con las horas jugadas para cada día (Lun-Dom)
+    res.json(horasSemanales);
+
+  } catch (error) {
+    console.error(`[Tiempo Semanal] Error al obtener tiempo de juego semanal para usuario ID ${idUsuario}:`, error);
+    res.status(500).json({ error: 'Error interno al obtener el tiempo de juego semanal.' });
+  }
+};
+// --------------------------------------------------------------------
+
 
 export {
     getEstadistica,
@@ -333,5 +394,6 @@ export {
     getTiempoJuegoUsuario,
     getEstadisticaUsuarioPorTipo,
     getTiposEstadistica,
-    upsertEstadistica // <-- Exportar la función actualizada
+    upsertEstadistica, // <-- Función existente
+    getTiempoJuegoSemanalUsuario // <-- Exportar la nueva función
   }
