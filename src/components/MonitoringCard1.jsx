@@ -28,8 +28,6 @@ ChartJS.register(
   Legend
 );
 
-const API_BASE_URL = 'http://localhost:3000'; // Ajusta si tu API corre en otro puerto/host
-
 const MonitoringCard1 = ({ userId }) => {
   const [chartData, setChartData] = useState({
     labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
@@ -58,12 +56,13 @@ const MonitoringCard1 = ({ userId }) => {
         }
         // --- Fin Obtener token ---
 
-        const response = await fetch(`${API_BASE_URL}/api/estadistica/usuario/${userId}/tiempo-semanal`, {
+        const response = await fetch(`/api/estadistica/usuario/${userId}/tiempo-semanal`, { // <-- URL relativa
           headers: {
             'Authorization': `Bearer ${token}`, // Incluir el token JWT
             'Content-Type': 'application/json'
           }
         });
+        // --- Fin Modificación ---
 
         if (!response.ok) {
           // Intentar leer el mensaje de error del cuerpo si existe
