@@ -13,20 +13,23 @@ import {
   Title,
   Tooltip,
   Legend,
+  // --- Añadir: Importar Filler ---
+  Filler,
 } from 'chart.js';
 import '../styles/MonitoringCard1.css'; // Importa los estilos CSS
 
-// --- Cambio: Registrar PointElement y LineElement, eliminar BarElement ---
+// --- Añadir: Registrar Filler ---
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement, // Añadido
-  LineElement,  // Añadido
-  // BarElement, // Eliminado
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler // Registrar el plugin
 );
+
 
 const MonitoringCard1 = ({ userId }) => {
   const [chartData, setChartData] = useState({
@@ -34,7 +37,10 @@ const MonitoringCard1 = ({ userId }) => {
     datasets: [],
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // Estado para manejar errores
+  const [error, setError] = useState(null);
+  // --- INICIO: Añadir estado para valor máximo ---
+  const [maxPlaytime, setMaxPlaytime] = useState(0);
+  // --- FIN: Añadir estado para valor máximo ---
 
   useEffect(() => {
     const fetchWeeklyPlaytime = async () => {
@@ -78,34 +84,38 @@ const MonitoringCard1 = ({ userId }) => {
             throw new Error('Los datos recibidos de la API no tienen el formato esperado.');
         }
 
+        // --- INICIO: Calcular y guardar el valor máximo ---
+        const currentMaxPlaytime = Math.max(...weeklyData, 0); // Calcula el máximo, asegura que sea al menos 0
+        setMaxPlaytime(currentMaxPlaytime);
+        // --- FIN: Calcular y guardar el valor máximo ---
+
         // --- Modificación: Adaptar dataset al estilo de Line chart ---
         setChartData({
           labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
           datasets: [
             {
-              label: 'Tiempo de Juego (horas)',
-              data: weeklyData,
-              fill: true, // Rellenar área bajo la línea
-              backgroundColor: (context) => { // Usar función para gradiente
+              label: 'Tiempo de Juego', // Se ajustará en el tooltip
+              data: weeklyData, // Mantenemos los datos en horas
+              fill: true,
+              // --- Cambio: Aplicar gradiente como en MonitoringCard2 ---
+              backgroundColor: (context) => {
                 const ctx = context.chart.ctx;
+                if (!ctx) return null; // Añadir verificación por si el contexto no está listo
                 const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.height * 0.6);
-                gradient.addColorStop(0, 'rgba(2, 190, 239, 0.5)'); // Inicio del gradiente (igual que Card2)
-                gradient.addColorStop(1, 'rgba(2, 190, 239, 0.05)'); // Fin del gradiente (igual que Card2)
+                if (!gradient) return null; // Añadir verificación por si el gradiente no se crea
+                gradient.addColorStop(0, 'rgba(2, 190, 239, 0.5)'); // Azul claro semi-transparente
+                gradient.addColorStop(1, 'rgba(2, 190, 239, 0.5)'); // Casi transparente
                 return gradient;
               },
-              borderColor: 'rgb(0, 170, 220)', // Color de línea (igual que Card2)
-              tension: 0.3, // Línea suave (igual que Card2)
-              pointBackgroundColor: 'rgb(0, 170, 220)', // Color de puntos (igual que Card2)
-              pointBorderColor: '#fff', // Borde de puntos (igual que Card2)
-              pointRadius: 4, // Tamaño de puntos (igual que Card2)
-              pointHoverRadius: 6, // Tamaño de puntos al pasar el ratón (igual que Card2)
-              pointHoverBackgroundColor: '#fff', // Color de fondo de puntos al pasar el ratón (igual que Card2)
-              pointHoverBorderColor: 'rgb(0, 170, 220)' // Color de borde de puntos al pasar el ratón (igual que Card2)
-              // --- Eliminadas propiedades específicas de Bar chart ---
-              // borderWidth: 1,
-              // borderRadius: 5,
-              // hoverBackgroundColor: 'rgba(2, 190, 239, 0.8)',
-              // hoverBorderColor: 'rgb(0, 170, 220)',
+              // --- Fin Cambio ---
+              borderColor: 'rgb(0, 170, 220)',
+              tension: 0.3,
+              pointBackgroundColor: 'rgb(0, 170, 220)',
+              pointBorderColor: '#fff',
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointHoverBackgroundColor: '#fff',
+              pointHoverBorderColor: 'rgb(0, 170, 220)'
             },
           ],
         });
@@ -114,27 +124,27 @@ const MonitoringCard1 = ({ userId }) => {
       } catch (error) {
         console.error("Error fetching weekly playtime:", error);
         setError(error.message || "Error al cargar los datos del tiempo de juego.");
-        setChartData({ // Limpiar datos en caso de error
-            labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-            datasets: [],
-        });
+        setChartData({ /* ... limpiar datos ... */ });
+        setMaxPlaytime(0); // Resetear maxPlaytime en error
       } finally {
         setLoading(false);
       }
     };
 
-    // Llama a la función si tienes un userId
     fetchWeeklyPlaytime();
 
-  }, [userId]); // Vuelve a cargar si cambia el userId
+  }, [userId]);
 
+  // --- INICIO: Modificar Opciones del Gráfico ---
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    // --- Cambio: Configurar interacción ---
     interaction: {
-      mode: 'index',
-      intersect: false,
+      mode: 'index', // Encuentra elementos en el mismo índice del eje X
+      intersect: false, // Muestra tooltip aunque no se toque directamente el punto
     },
+    // --- Fin Cambio ---
     plugins: {
       legend: {
         position: 'top',
@@ -142,19 +152,28 @@ const MonitoringCard1 = ({ userId }) => {
           color: 'white',
         }
       },
-      title: {
-        display: false,
-      },
+      title: { /* ... */ },
       tooltip: {
         callbacks: {
           label: function(context) {
+            const valueInHours = context.parsed.y;
+            if (valueInHours === null) return '';
+
             let label = context.dataset.label || '';
             if (label) {
               label += ': ';
             }
-            if (context.parsed.y !== null) {
-              // Mantenemos el formato de horas
-              label += parseFloat(context.parsed.y.toFixed(1)) + ' horas';
+
+            // Si el valor es menor a 1 hora, mostrar en minutos
+            if (valueInHours < 1 && valueInHours > 0) {
+              const minutes = Math.round(valueInHours * 60);
+              label += `${minutes} minuto${minutes !== 1 ? 's' : ''}`;
+            } else if (valueInHours === 0) {
+                 label += '0 minutos'; // Mostrar 0 minutos explícitamente
+            }
+            // Si es 1 hora o más, mostrar en horas (con 1 decimal si es necesario)
+            else {
+              label += `${valueInHours.toFixed(1)} hora${valueInHours !== 1 ? 's' : ''}`;
             }
             return label;
           }
@@ -164,37 +183,56 @@ const MonitoringCard1 = ({ userId }) => {
     scales: {
       y: {
         beginAtZero: true,
+        // --- Ajuste dinámico del máximo del eje Y ---
+        // Si el máximo es menor a 1 hora, fijamos el máximo del eje en 1 (para que la escala de minutos funcione bien hasta 60m)
+        max: maxPlaytime < 1 ? 1 : undefined,
         ticks: {
           color: 'rgba(255, 255, 255, 0.8)',
-          callback: function(value) {
-             // Mantenemos el formato de horas
-             return parseFloat(value.toFixed(1)) + 'h';
+          // --- Cambio: Añadir stepSize para escala de minutos ---
+          stepSize: maxPlaytime < 1 ? (1/6) : undefined, // 1/6 de hora = 10 minutos
+          callback: function(value, index, ticks) {
+            // Si el máximo de la semana es menor a 1 hora, mostrar eje en minutos
+            if (maxPlaytime < 1) {
+              // El 'value' aquí sigue estando en la escala de horas (0 a 1)
+              const minutes = Math.round(value * 60);
+              // Opcional: Evitar mostrar ticks duplicados si Chart.js los genera
+              // const previousTickValue = index > 0 ? Math.round(ticks[index - 1].value * 60) : -1;
+              // if (minutes === previousTickValue) return '';
+              return `${minutes}m`;
+            }
+            // Si no, mostrar en horas
+            else {
+              // Puedes ajustar los decimales si es necesario
+              // Si el valor es entero, no mostrar decimales
+              return Number.isInteger(value) ? `${value}h` : `${value.toFixed(1)}h`;
+            }
           }
+          // --- Fin Cambio ---
         },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.08)',
-        },
+        grid: { /* ... */ },
         title: {
-          display: true, // Mantenemos el título del eje Y
-          text: 'Horas de Juego', // Añadimos texto al título del eje Y
-          color: 'rgba(255, 255, 255, 0.8)'
+          display: true,
+          // Título dinámico del eje Y
+          text: maxPlaytime < 1 ? 'Minutos de Juego' : 'Horas de Juego',
+          color: 'rgb(255, 255, 255)'
         }
       },
       x: {
         ticks: {
           color: 'rgba(255, 255, 255, 0.8)',
+          padding: 10,
         },
         grid: {
           color: 'rgba(255, 255, 255, 0.08)',
         },
-        title: {
-          display: true, // Mantenemos el título del eje X
-          text: 'Día de la Semana', // Añadimos texto al título del eje X
-          color: 'rgba(255, 255, 255, 0.8)'
+         title: {
+          display: true,
+          color: 'rgba(255, 255, 255, 0.8)',
         }
       },
     },
   };
+  // --- FIN: Modificar Opciones del Gráfico ---
 
   return (
     <div className="monitoring-card monitoring-card-1">
@@ -205,7 +243,7 @@ const MonitoringCard1 = ({ userId }) => {
         ) : error ? (
             <p className="error-message">{error}</p>
         // --- Cambio: Renderizar Line en lugar de Bar ---
-        ) : chartData.datasets && chartData.datasets.length > 0 && chartData.datasets[0].data.length > 0 ? ( // Asegurarse que hay datos antes de renderizar
+        ) : chartData.datasets && chartData.datasets.length > 0 ? ( // Condición modificada para renderizar solo si hay datos
           <Line options={options} data={chartData} />
         ) : (
           // Mensaje si no hay datos o hubo error

@@ -216,13 +216,13 @@ const MonitoringCard2 = ({ userId }) => {
       x: {
         ticks: {
           color: 'rgba(255, 255, 255, 0.8)',
+          padding: 10,
         },
         grid: {
           color: 'rgba(255, 255, 255, 0.08)',
         },
          title: {
           display: true,
-          text: 'Nivel', // Añadir texto al título del eje X
           color: 'rgba(255, 255, 255, 0.8)',
         }
       },
