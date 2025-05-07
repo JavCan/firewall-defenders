@@ -152,7 +152,7 @@ const doLogin = async (req, res) => {
 
       try {
         //------- 2. Buscar o Crear Usuario en DB Local -------
-        const localUser = await findOrCreateUser(aulifyEmail);
+        let localUser = await findOrCreateUser(aulifyEmail); // Cambiado a let
         console.log(`Usuario ${localUser.email} (ID: ${localUser.id}) asegurado en la base de datos local.`);
         //-----------------------------------------
 
@@ -164,10 +164,23 @@ const doLogin = async (req, res) => {
         await updateUserCoinCount(localUser.id, aulifyToken); // <-- Llamada a la nueva función
         //-----------------------------------------
 
+        // --- NUEVO: Volver a obtener el usuario de la DB para obtener las monedas actualizadas ---
+        const [updatedUsers] = await pool.query('SELECT id, email, monedas FROM usuario WHERE id = ?', [localUser.id]);
+        if (updatedUsers.length === 0) {
+            // Esto no debería pasar si findOrCreateUser funcionó, pero es una buena verificación
+            console.error(`Error crítico: Usuario ${localUser.id} no encontrado después de la actualización.`);
+            return res.status(500).json({ error: 'Error interno al obtener datos actualizados del usuario.' });
+        }
+        localUser = updatedUsers[0]; // Actualizar localUser con los datos frescos, incluyendo monedas
+        console.log(`Monedas actualizadas para usuario ${localUser.id}: ${localUser.monedas}`);
+        // --- FIN NUEVO ---
+
+
         //------- Generación de Nuestro Token JWT -------
         const payload = {
           userId: localUser.id,
           email: localUser.email
+          // No incluimos monedas en el JWT directamente por seguridad y porque pueden cambiar.
         };
         console.log('>>> DEBUG: ID de usuario para JWT:', localUser.id);
         console.log('>>> DEBUG: Payload para JWT:', payload);
@@ -176,9 +189,13 @@ const doLogin = async (req, res) => {
         //-----------------------------------------
 
         //------- 3. Envío de Respuesta al Frontend -------
+        // Añadir las monedas a la respuesta JSON que se envía a Unity
         res.json({
-            ...aulifyResponse.data,
-            jwtToken: nuestroTokenJWT
+            ...aulifyResponse.data, // Incluye el token de Aulify si es necesario
+            jwtToken: nuestroTokenJWT,
+            userId: localUser.id, // Puede ser útil tener el ID directamente
+            email: localUser.email,
+            monedas: localUser.monedas // <-- ENVIAR LAS MONEDAS AQUÍ
         });
         //-----------------------------------------
 
