@@ -23,6 +23,10 @@ app.use('/', (req, res, next) => {
     next(); // Pasa al siguiente middleware (el router de usuarios)
 }, usuariosRouter); // Monta el router de usuarios bajo /api/usuarios
 
+app.get('/', (req, res) => {
+  res.send('Hola desde el servidor de Firewall Defenders!')
+});
+
 // Mantenemos las otras rutas como estaban (asumiendo que no necesitan el prefijo /api/ o ya lo tienen definido internamente)
 // Si necesitas prefijos o logging para estas, habría que modificarlas de forma similar.
 app.use(estadisticaRouter);

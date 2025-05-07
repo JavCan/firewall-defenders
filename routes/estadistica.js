@@ -8,7 +8,10 @@ import {
   getTiposEstadistica,
   upsertEstadistica,
   getTiempoJuegoSemanalUsuario,
-  getMonedasGastadasPorNivelUsuario // <-- Importar la nueva función
+  getMonedasGastadasPorNivelUsuario,
+  registrarGastoMonedasPorNivel,
+  iniciarSesionJuego, // <-- IMPORTAR NUEVA FUNCIÓN
+  finalizarSesionJuego // <-- IMPORTAR NUEVA FUNCIÓN
 } from '../controllers/estadistica.controller.js'
 import { verifyJWT } from '../middleware/jwt.middleware.js';
 
@@ -38,5 +41,21 @@ router.get('/api/estadistica/usuario/:idUsuario/monedas-por-nivel', verifyJWT, g
 
 // --- RUTA POST existente para crear/actualizar estadísticas ---
 router.post('/api/estadistica', verifyJWT, upsertEstadistica); // Ya protegida
+
+// --- RUTA POST existente para registrar gasto de monedas por nivel ---
+router.post('/api/monedas/gasto-nivel', verifyJWT, registrarGastoMonedasPorNivel); // Ya protegida
+
+
+// --- NUEVAS RUTAS POST para manejar sesiones de juego ---
+// Iniciar sesión (protegida por JWT)
+router.post('/api/sesion/inicio', verifyJWT, iniciarSesionJuego);
+
+// Finalizar sesión (protegida por JWT)
+router.post('/api/sesion/fin', verifyJWT, finalizarSesionJuego);
+
+
+// --- RUTA POST existente para crear/actualizar estadísticas genéricas ---
+// Esta línea parece duplicada, la elimino para evitar conflictos.
+// router.post('/api/estadistica', verifyJWT, upsertEstadistica); // Ya protegida
 
 export { router }

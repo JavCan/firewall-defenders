@@ -387,8 +387,6 @@ const getTiempoJuegoSemanalUsuario = async (req, res) => {
 // --------------------------------------------------------------------
 
 
-// ... existing code ...
-
 // ------- NUEVA FUNCIÓN: Obtener Monedas Gastadas por Nivel (para MonitoringCard2) -------
 const getMonedasGastadasPorNivelUsuario = async (req, res) => {
   // Obtener idUsuario del token JWT (añadido por verifyJWT middleware)
@@ -468,18 +466,134 @@ const getMonedasGastadasPorNivelUsuario = async (req, res) => {
     res.status(500).json([]); // Devolver array vacío en lugar de objeto de error
   }
 };
-// --------------------------------------------------------------------
 
-// ... existing code ...
+// --- NUEVA FUNCIÓN: Registrar Gasto de Monedas por Nivel ---
+const registrarGastoMonedasPorNivel = async (req, res) => {
+  // idUsuario se obtiene del token JWT verificado por el middleware
+  const idUsuario = req.user?.userId;
+  const { idNivel, cantidad } = req.body; // Obtener del cuerpo de la solicitud
 
+  // Validaciones básicas
+  if (!idUsuario) {
+    return res.status(401).json({ error: 'Usuario no autenticado.' });
+  }
+  if (typeof idNivel !== 'number' || idNivel <= 0) {
+    return res.status(400).json({ error: 'El campo "idNivel" es requerido y debe ser un número positivo.' });
+  }
+  if (typeof cantidad !== 'number' || cantidad <= 0) {
+    return res.status(400).json({ error: 'El campo "cantidad" es requerido y debe ser un número positivo.' });
+  }
+
+  console.log(`[Gasto Monedas] Registrando gasto para Usuario ID: ${idUsuario}, Nivel: ${idNivel}, Cantidad: ${cantidad}`);
+
+  try {
+    const sql = `
+      INSERT INTO transaccion_monedas (idUsuario, idNivel, cantidad, fecha_hora)
+      VALUES (?, ?, ?, NOW())
+    `;
+    const [result] = await pool.query(sql, [idUsuario, idNivel, cantidad]);
+
+    if (result.affectedRows > 0) {
+      console.log(`[Gasto Monedas] Gasto registrado exitosamente. ID de transacción: ${result.insertId}`);
+      res.status(201).json({ message: 'Gasto de monedas registrado correctamente.' });
+    } else {
+      console.error('[Gasto Monedas] No se insertó ninguna fila al registrar el gasto.');
+      res.status(500).json({ error: 'Error al registrar el gasto de monedas.' });
+    }
+  } catch (error) {
+    console.error(`[Gasto Monedas] Error al insertar en transaccion_monedas para Usuario ID ${idUsuario}:`, error);
+    res.status(500).json({ error: 'Error interno del servidor al registrar el gasto.' });
+  }
+};
+// --- FIN NUEVA FUNCIÓN ---
+
+// ------- NUEVAS FUNCIONES: Manejo de Sesiones de Juego -------
+
+// Iniciar una nueva sesión de juego
+const iniciarSesionJuego = async (req, res) => {
+  const idUsuario = req.user?.userId;
+  if (!idUsuario) {
+    return res.status(401).json({ error: 'Usuario no autenticado.' });
+  }
+
+  try {
+    const fechaInicio = new Date(); // Hora actual del servidor
+    const [result] = await pool.query(
+      'INSERT INTO sesion_juego (idUsuario, fecha_inicio) VALUES (?, ?)',
+      [idUsuario, fechaInicio]
+    );
+
+    const sesionId = result.insertId;
+    console.log(`[Sesion Juego] Iniciada sesión ${sesionId} para usuario ${idUsuario}`);
+    res.status(201).json({ sesionId: sesionId, fechaInicio: fechaInicio });
+
+  } catch (error) {
+    console.error('Error al iniciar sesión de juego:', error);
+    res.status(500).json({ error: 'Error interno al iniciar la sesión de juego.' });
+  }
+};
+
+// Finalizar una sesión de juego existente
+const finalizarSesionJuego = async (req, res) => {
+  const idUsuario = req.user?.userId;
+  if (!idUsuario) {
+    return res.status(401).json({ error: 'Usuario no autenticado.' });
+  }
+
+  const { sesionId } = req.body; // Recibimos el ID de la sesión a finalizar
+
+  if (!sesionId) {
+    return res.status(400).json({ error: 'Falta el ID de la sesión (sesionId).' });
+  }
+
+  try {
+    const fechaFin = new Date(); // Hora actual del servidor
+
+    // 1. Obtener la fecha de inicio para calcular la duración
+    const [sesiones] = await pool.query(
+      'SELECT fecha_inicio FROM sesion_juego WHERE id = ? AND idUsuario = ? AND fecha_fin IS NULL',
+      [sesionId, idUsuario]
+    );
+
+    if (sesiones.length === 0) {
+      return res.status(404).json({ error: 'Sesión no encontrada, ya finalizada o no pertenece al usuario.' });
+    }
+
+    const fechaInicio = new Date(sesiones[0].fecha_inicio);
+    const duracionSegundos = Math.round((fechaFin.getTime() - fechaInicio.getTime()) / 1000);
+
+    // 2. Actualizar la sesión con la fecha de fin y la duración
+    const [result] = await pool.query(
+      'UPDATE sesion_juego SET fecha_fin = ?, duracion_segundos = ? WHERE id = ? AND idUsuario = ?',
+      [fechaFin, duracionSegundos, sesionId, idUsuario]
+    );
+
+    if (result.affectedRows === 0) {
+       // Esto no debería ocurrir si la consulta SELECT funcionó, pero es una doble verificación
+       return res.status(404).json({ error: 'No se pudo actualizar la sesión.' });
+    }
+
+    console.log(`[Sesion Juego] Finalizada sesión ${sesionId} para usuario ${idUsuario}. Duración: ${duracionSegundos}s`);
+    res.status(200).json({ mensaje: 'Sesión finalizada correctamente.', duracionSegundos: duracionSegundos });
+
+  } catch (error) {
+    console.error('Error al finalizar sesión de juego:', error);
+    res.status(500).json({ error: 'Error interno al finalizar la sesión de juego.' });
+  }
+};
+
+// --- Exportar TODO ---
 export {
   getEstadistica,
   getEstadisticaPorTipo,
-  getEstadisticaUsuario,
-  getTiempoJuegoUsuario,
-  getEstadisticaUsuarioPorTipo,
   getTiposEstadistica,
+  getEstadisticaUsuario,
+  getEstadisticaUsuarioPorTipo,
+  getTiempoJuegoUsuario,
   upsertEstadistica,
-  getTiempoJuegoSemanalUsuario,
-  getMonedasGastadasPorNivelUsuario // Asegúrate que está exportada
+  getTiempoJuegoSemanalUsuario, // Ya existente
+  getMonedasGastadasPorNivelUsuario, // Ya existente
+  registrarGastoMonedasPorNivel, // Ya existente
+  iniciarSesionJuego, // <-- Añadido
+  finalizarSesionJuego // <-- Añadido
 };
