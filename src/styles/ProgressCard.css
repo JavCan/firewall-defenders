@@ -56,12 +56,15 @@
   position: absolute;
   top: calc(100% + 5px);
   right: 0;
-  background-color: rgba(30, 30, 63, 0.9);
+  background-color: rgba(30, 30, 63, 0.95); /* Fondo oscuro, ligeramente más opaco */
   border-radius: 10px;
   overflow: hidden;
-  width: 200px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  min-width: 200px; /* Ancho mínimo para contenido como "Todas las estadísticas" */
+  width: max-content; /* Permitir que crezca según el contenido */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada */
   font-size: 14px;
+  z-index: 100; /* Asegurar que esté por encima, consistente con StickerGallery */
+  padding: 4px 0; /* Pequeño padding vertical interno */
 }
 
 .dropdown-item {
@@ -69,14 +72,16 @@
   color: white;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  background-color: transparent; /* Asegurar fondo transparente por defecto */
 }
 
 .dropdown-item.active {
-  background-color: rgba(2, 190, 239, 0.3);
+  background-color: rgba(2, 190, 239, 0.3); /* Color de acento para el ítem activo */
+  /* font-weight: bold; */ /* Opcional: hacer el texto del ítem activo más grueso */
 }
 
 .dropdown-item:hover {
-  background-color: rgba(30, 30, 63, 0.7);
+  background-color: rgba(45, 45, 80, 0.9); /* Resaltado sutil al pasar el ratón, consistente */
 }
 
 /* Nuevos estilos para las tarjetas de estadísticas */
