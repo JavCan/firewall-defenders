@@ -34,7 +34,7 @@ function App() {
 
       try {
         // Usa la URL completa del backend y el endpoint /me
-        const response = await fetch('http://localhost:3000/api/usuarios/me', { // <-- URL CORREGIDA
+        const response = await fetch('https://mrr4kvt4dj.execute-api.us-east-1.amazonaws.com/api/usuarios/me', { // <-- URL CORREGIDA
           method: 'GET',
           headers: {
             // Añade el header de autorización con el jwtToken
