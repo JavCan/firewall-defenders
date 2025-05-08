@@ -11,7 +11,9 @@ import {
   getMonedasGastadasPorNivelUsuario,
   registrarGastoMonedasPorNivel,
   iniciarSesionJuego, // <-- IMPORTAR NUEVA FUNCIÓN
-  finalizarSesionJuego // <-- IMPORTAR NUEVA FUNCIÓN
+  finalizarSesionJuego,
+  registrarUsoSticker,
+  getUsoStickersUsuario // <-- IMPORTAR NUEVA FUNCIÓN
 } from '../controllers/estadistica.controller.js'
 import { verifyJWT } from '../middleware/jwt.middleware.js';
 
@@ -41,6 +43,8 @@ router.get('/api/estadistica/usuario/:idUsuario/monedas-por-nivel', verifyJWT, g
 
 // --- RUTA POST existente para crear/actualizar estadísticas ---
 router.post('/api/estadistica', verifyJWT, upsertEstadistica); // Ya protegida
+router.post('/api/estadistica/sticker/usar', verifyJWT, registrarUsoSticker);
+router.get('/api/estadistica/stickers/uso', verifyJWT, getUsoStickersUsuario);
 
 // --- RUTA POST existente para registrar gasto de monedas por nivel ---
 router.post('/api/monedas/gasto-nivel', verifyJWT, registrarGastoMonedasPorNivel); // Ya protegida

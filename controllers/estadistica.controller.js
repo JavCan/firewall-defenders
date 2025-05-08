@@ -582,6 +582,59 @@ const finalizarSesionJuego = async (req, res) => {
   }
 };
 
+// ... (importaciones y otras funciones) ...
+
+const registrarUsoSticker = async (req, res) => {
+  try {
+    const idUsuario = req.user?.userId; // Asumiendo que verifyJWT añade 'user' al request
+    const { idSticker } = req.body;
+
+    if (!idUsuario) {
+      return res.status(401).json({ error: 'Usuario no autenticado.' });
+    }
+    if (typeof idSticker !== 'number') {
+      return res.status(400).json({ error: 'idSticker es requerido y debe ser un número.' });
+    }
+
+    const query = `
+      INSERT INTO uso_stickers (idUsuario, idSticker, contador_uso)
+      VALUES (?, ?, 1)
+      ON DUPLICATE KEY UPDATE contador_uso = contador_uso + 1;
+    `;
+    await pool.query(query, [idUsuario, idSticker]);
+
+    res.status(200).json({ message: 'Uso de sticker registrado correctamente.' });
+  } catch (error) {
+    console.error('Error al registrar uso de sticker:', error);
+    res.status(500).json({ error: 'Error interno al registrar uso de sticker.' });
+  }
+};
+
+// ... (importaciones y otras funciones) ...
+
+const getUsoStickersUsuario = async (req, res) => {
+  try {
+    const idUsuario = req.user?.userId;
+
+    if (!idUsuario) {
+      return res.status(401).json({ error: 'Usuario no autenticado.' });
+    }
+
+    const query = `
+      SELECT idSticker, contador_uso
+      FROM uso_stickers
+      WHERE idUsuario = ?
+      ORDER BY contador_uso DESC, idSticker ASC; -- Ordenar por más usado, luego por ID para desempate
+    `;
+    const [rows] = await pool.query(query, [idUsuario]);
+
+    res.json(rows); // Devuelve un array de objetos: [{ idSticker: 5, contador_uso: 10 }, ...]
+  } catch (error) {
+    console.error('Error al obtener uso de stickers del usuario:', error);
+    res.status(500).json({ error: 'Error interno al obtener uso de stickers.' });
+  }
+};
+
 // --- Exportar TODO ---
 export {
   getEstadistica,
@@ -595,5 +648,7 @@ export {
   getMonedasGastadasPorNivelUsuario, // Ya existente
   registrarGastoMonedasPorNivel, // Ya existente
   iniciarSesionJuego, // <-- Añadido
-  finalizarSesionJuego // <-- Añadido
+  finalizarSesionJuego,
+  registrarUsoSticker,
+  getUsoStickersUsuario // <-- Añadido
 };
