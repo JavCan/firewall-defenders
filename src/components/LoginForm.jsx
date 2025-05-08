@@ -239,7 +239,7 @@ export default function LoginForm({ onLogin }) { // Removed isLoading and error 
     console.log("Form data submitted:", data);
 
     try {
-      const response = await fetch('/api/login', { // Ensure this is your correct backend endpoint
+      const response = await fetch('https://mrr4kvt4dj.execute-api.us-east-1.amazonaws.com/api/login', { // Ensure this is your correct backend endpoint
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

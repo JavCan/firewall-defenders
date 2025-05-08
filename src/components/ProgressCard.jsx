@@ -89,7 +89,7 @@ const ProgressCard = ({ userId }) => {
         // --- Fin obtención del token ---
 
         // Usa el userId recibido por props
-        const response = await fetch(`/api/estadistica/usuario/${userId}`, {
+        const response = await fetch(`https://mrr4kvt4dj.execute-api.us-east-1.amazonaws.com/api/estadistica/usuario/${userId}`, { // <-- URL CORREGIDA
            // --- Añadir cabeceras ---
            headers: {
             'Authorization': `Bearer ${token}`,

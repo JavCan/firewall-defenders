@@ -62,7 +62,7 @@ const MonitoringCard1 = ({ userId }) => {
         }
         // --- Fin Obtener token ---
 
-        const response = await fetch(`/api/estadistica/usuario/${userId}/tiempo-semanal`, { // <-- URL relativa
+        const response = await fetch(`https://mrr4kvt4dj.execute-api.us-east-1.amazonaws.com/api/estadistica/usuario/${userId}/tiempo-semanal`, { // <-- URL CORREGIDA
           headers: {
             'Authorization': `Bearer ${token}`, // Incluir el token JWT
             'Content-Type': 'application/json'

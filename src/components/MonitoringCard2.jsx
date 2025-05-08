@@ -71,7 +71,7 @@ const MonitoringCard2 = ({ userId }) => {
 
       try {
         // --- Llamada real a la API ---
-        const response = await fetch(`/api/estadistica/usuario/${userId}/monedas-por-nivel`, {
+        const response = await fetch(`https://mrr4kvt4dj.execute-api.us-east-1.amazonaws.com/api/estadistica/usuario/${userId}/monedas-por-nivel`, { // <-- URL CORREGIDA
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Incluir el token JWT

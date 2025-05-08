@@ -69,7 +69,7 @@ const StickerGallery = ({ ultimoStickerDesbloqueado }) => {
       if (!token) {
         throw new Error("Usuario no autenticado (jwtToken no encontrado). No se puede cargar el uso de stickers."); // MODIFICADO: Mensaje más específico
       }
-      const response = await fetch('/api/estadistica/stickers/uso', {
+      const response = await fetch('https://mrr4kvt4dj.execute-api.us-east-1.amazonaws.com/api/estadistica/stickers/uso', { // <-- URL CORREGIDA
         headers: {
           'Authorization': `Bearer ${token}`,
         },
