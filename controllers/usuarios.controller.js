@@ -30,25 +30,6 @@ const getUsuario = async (req, res) => {
   }
 };
 
-// Añadir nueva función para buscar usuario por email
-const getUsuarioPorEmail = async (req, res) => {
-  try {
-    const { email } = req.params;
-    console.log(`Buscando usuario con email: ${email}`);
-    
-    const [rows] = await pool.query('SELECT * FROM usuario WHERE email = ?', [email]);
-    
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-    
-    res.json(rows[0]);
-  } catch (error) {
-    console.error('Error al obtener usuario por email:', error);
-    res.status(500).json({ error: 'Error al obtener el usuario por email' });
-  }
-};
-
 /**
  * Busca un usuario por email. Si no existe, lo crea.
  * @param {string} email - El email del usuario a buscar o crear.
@@ -87,10 +68,10 @@ const findOrCreateUser = async (email) => {
   }
 };
 
-/**
- * Obtiene los detalles del usuario actualmente autenticado.
- * Utiliza req.user.userId que fue añadido por el middleware verifyJWT.
- */
+
+// Obtiene los detalles del usuario actualmente autenticado.
+// Utiliza req.user.userId que fue añadido por el middleware verifyJWT.
+
 const getCurrentUser = async (req, res) => {
   // DEBUG: Verifica el usuario adjuntado por el middleware
   console.log('>>> DEBUG: req.user recibido en getCurrentUser:', req.user);
@@ -126,8 +107,6 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-
-// Asegúrate de exportar la nueva función junto con las existentes
 export {
-  getUsuarios, getUsuario, getUsuarioPorEmail, findOrCreateUser, getCurrentUser // <-- Añadir la nueva función
+  getUsuarios, getUsuario, findOrCreateUser, getCurrentUser 
 };

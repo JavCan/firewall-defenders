@@ -13,7 +13,12 @@ const app = express()
 const port = process.env.PORT || 3000
 
 // Middleware
-app.use(cors())
+// app.use(cors()) // Comentamos o eliminamos la configuración CORS simple
+app.use(cors({
+  origin: '*', // Permite cualquier origen. Para producción, considera restringirlo a tu dominio frontend.
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos HTTP permitidos
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'] // Cabeceras permitidas
+}));
 app.use(express.json()) // Middleware to parse JSON bodies
 
 // Rutas

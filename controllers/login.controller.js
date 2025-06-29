@@ -61,7 +61,6 @@ const updateUserStickerCount = async (localUserId, aulifyToken) => {
     }
   }
 };
-//-----------------------------------------
 
 //------- Función Auxiliar: Actualizar Monedas del Usuario -------
 const updateUserCoinCount = async (localUserId, aulifyToken) => {
@@ -70,7 +69,6 @@ const updateUserCoinCount = async (localUserId, aulifyToken) => {
     console.warn(`[Monedas] No se proporcionó token de Aulify para usuario ID: ${localUserId}. No se pueden actualizar monedas.`);
     return;
   }
-  //-----------------------------------------
   console.log(`[Monedas] Intentando obtener monedas de Aulify para usuario local ID: ${localUserId}`);
   try {
     //------- Llamada a la API de Monedas de Aulify -------
@@ -80,7 +78,6 @@ const updateUserCoinCount = async (localUserId, aulifyToken) => {
         'Authorization': `Bearer ${aulifyToken}` // <-- Asumiendo Bearer token también aquí
       }
     });
-    //-----------------------------------------
 
     //------- Procesamiento de la Respuesta de Monedas -------
     if (coinResponse.status === 200 && coinResponse.data && typeof coinResponse.data.coins !== 'undefined') {
@@ -95,14 +92,12 @@ const updateUserCoinCount = async (localUserId, aulifyToken) => {
           [coinCount, localUserId]
         );
         console.log(`[Monedas] DB local actualizada para usuario ${localUserId}.`);
-        //-----------------------------------------
       } else {
         console.warn('[Monedas] No se pudo parsear el campo "coins" como número desde la respuesta de monedas de Aulify:', coinResponse.data);
       }
     } else {
       console.error('[Monedas] Respuesta no exitosa o formato inesperado del endpoint de monedas de Aulify:', coinResponse.status, coinResponse.data);
     }
-    //-----------------------------------------
   } catch (error) {
     //------- Manejo de Errores (Actualización de Monedas) -------
     console.error(`[Monedas] Error al obtener/actualizar monedas para usuario local ID ${localUserId}:`);
@@ -114,11 +109,8 @@ const updateUserCoinCount = async (localUserId, aulifyToken) => {
     } else {
       console.error('  Error general (ej. DB):', error);
     }
-    //-----------------------------------------
   }
 };
-//-----------------------------------------
-
 
 //------- Controlador Principal: Inicio de Sesión (doLogin) -------
 const doLogin = async (req, res) => {
@@ -143,7 +135,6 @@ const doLogin = async (req, res) => {
       { email: email, password: password },
       { headers: { 'X-Api-Key': AULIFY_API_KEY } }
     );
-    //-----------------------------------------
 
     //------- Procesamiento Post-Autenticación Exitosa con Aulify -------
     if (aulifyResponse.status >= 200 && aulifyResponse.status < 300) {
@@ -154,15 +145,12 @@ const doLogin = async (req, res) => {
         //------- 2. Buscar o Crear Usuario en DB Local -------
         let localUser = await findOrCreateUser(aulifyEmail); // Cambiado a let
         console.log(`Usuario ${localUser.email} (ID: ${localUser.id}) asegurado en la base de datos local.`);
-        //-----------------------------------------
 
         //------- Actualización de Stickers (Llamada a Función Auxiliar) -------
         await updateUserStickerCount(localUser.id, aulifyToken);
-        //-----------------------------------------
 
         //------- Actualización de Monedas (Llamada a Nueva Función Auxiliar) -------
         await updateUserCoinCount(localUser.id, aulifyToken); // <-- Llamada a la nueva función
-        //-----------------------------------------
 
         // --- NUEVO: Volver a obtener el usuario de la DB para obtener las monedas actualizadas ---
         const [updatedUsers] = await pool.query('SELECT id, email, monedas FROM usuario WHERE id = ?', [localUser.id]);
@@ -173,8 +161,6 @@ const doLogin = async (req, res) => {
         }
         localUser = updatedUsers[0]; // Actualizar localUser con los datos frescos, incluyendo monedas
         console.log(`Monedas actualizadas para usuario ${localUser.id}: ${localUser.monedas}`);
-        // --- FIN NUEVO ---
-
 
         //------- Generación de Nuestro Token JWT -------
         const payload = {
@@ -186,7 +172,6 @@ const doLogin = async (req, res) => {
         console.log('>>> DEBUG: Payload para JWT:', payload);
         const nuestroTokenJWT = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
         console.log(`JWT generado para el usuario ID: ${localUser.id}`);
-        //-----------------------------------------
 
         //------- 3. Envío de Respuesta al Frontend -------
         // Añadir las monedas a la respuesta JSON que se envía a Unity
@@ -197,7 +182,6 @@ const doLogin = async (req, res) => {
             email: localUser.email,
             monedas: localUser.monedas // <-- ENVIAR LAS MONEDAS AQUÍ
         });
-        //-----------------------------------------
 
       } catch (dbError) {
         //------- Manejo de Errores (DB Local, Stickers o Monedas) ------- // <-- Actualizar comentario
@@ -206,10 +190,8 @@ const doLogin = async (req, res) => {
              message: 'Login successful via external service, but failed during local processing.',
              aulifyData: aulifyResponse.data
          });
-         //-----------------------------------------
       }
     }
-    //-----------------------------------------
   } catch (error) {
     //------- Manejo de Errores (Proceso General de Login / Aulify) -------
     console.error('Error during Aulify login process:');
@@ -242,8 +224,5 @@ const doLogin = async (req, res) => {
     }
   }
 };
-//-----------------------------------------
 
-//------- Exportaciones -------
 export { doLogin };
-//-----------------------------------------

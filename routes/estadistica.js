@@ -10,56 +10,32 @@ import {
   getTiempoJuegoSemanalUsuario,
   getMonedasGastadasPorNivelUsuario,
   registrarGastoMonedasPorNivel,
-  iniciarSesionJuego, // <-- IMPORTAR NUEVA FUNCIÓN
+  iniciarSesionJuego, 
   finalizarSesionJuego,
   registrarUsoSticker,
-  getUsoStickersUsuario // <-- IMPORTAR NUEVA FUNCIÓN
+  getUsoStickersUsuario 
 } from '../controllers/estadistica.controller.js'
 import { verifyJWT } from '../middleware/jwt.middleware.js';
 
 const router = express.Router()
 
 // --- Rutas GET existentes ---
-// Considera si estas rutas también deberían estar protegidas por JWT
 router.get('/api/estadistica', getEstadistica);
 router.get('/api/estadistica/tipos', getTiposEstadistica);
 router.get('/api/estadistica/tipo/:idTipo', getEstadisticaPorTipo);
-router.get('/api/estadistica/usuario/:idUsuario', verifyJWT, getEstadisticaUsuario); // Protegida
-router.get('/api/estadistica/usuario/:idUsuario/tiempo', verifyJWT, getTiempoJuegoUsuario); // Protegida
-router.get('/api/estadistica/usuario/:idUsuario/tipo/:idTipo', verifyJWT, getEstadisticaUsuarioPorTipo); // Protegida
-
-// --- NUEVA RUTA GET para obtener tiempo de juego semanal ---
-// Protegida por JWT. El idUsuario se obtiene del token dentro del controlador.
-// Aunque la ruta incluye :idUsuario, el controlador priorizará el ID del token.
-// Podríamos quitar :idUsuario de la ruta si SIEMPRE se va a obtener del token,
-// pero mantenerlo puede ser útil para administradores en el futuro (con lógica de permisos adicional).
-// Por ahora, lo dejamos pero usamos el token ID en el controller.
+router.get('/api/estadistica/usuario/:idUsuario', verifyJWT, getEstadisticaUsuario); 
+router.get('/api/estadistica/usuario/:idUsuario/tiempo', verifyJWT, getTiempoJuegoUsuario); 
+router.get('/api/estadistica/usuario/:idUsuario/tipo/:idTipo', verifyJWT, getEstadisticaUsuarioPorTipo); 
 router.get('/api/estadistica/usuario/:idUsuario/tiempo-semanal', verifyJWT, getTiempoJuegoSemanalUsuario);
-
-// --- NUEVA RUTA GET para obtener monedas gastadas por nivel ---
-// Protegida por JWT. El idUsuario se obtiene del token.
 router.get('/api/estadistica/usuario/:idUsuario/monedas-por-nivel', verifyJWT, getMonedasGastadasPorNivelUsuario);
-
-
-// --- RUTA POST existente para crear/actualizar estadísticas ---
-router.post('/api/estadistica', verifyJWT, upsertEstadistica); // Ya protegida
-router.post('/api/estadistica/sticker/usar', verifyJWT, registrarUsoSticker);
 router.get('/api/estadistica/stickers/uso', verifyJWT, getUsoStickersUsuario);
 
-// --- RUTA POST existente para registrar gasto de monedas por nivel ---
-router.post('/api/monedas/gasto-nivel', verifyJWT, registrarGastoMonedasPorNivel); // Ya protegida
+router.post('/api/estadistica', verifyJWT, upsertEstadistica);
+router.post('/api/estadistica/sticker/usar', verifyJWT, registrarUsoSticker);
 
+router.post('/api/monedas/gasto-nivel', verifyJWT, registrarGastoMonedasPorNivel);
 
-// --- NUEVAS RUTAS POST para manejar sesiones de juego ---
-// Iniciar sesión (protegida por JWT)
 router.post('/api/sesion/inicio', verifyJWT, iniciarSesionJuego);
-
-// Finalizar sesión (protegida por JWT)
 router.post('/api/sesion/fin', verifyJWT, finalizarSesionJuego);
-
-
-// --- RUTA POST existente para crear/actualizar estadísticas genéricas ---
-// Esta línea parece duplicada, la elimino para evitar conflictos.
-// router.post('/api/estadistica', verifyJWT, upsertEstadistica); // Ya protegida
 
 export { router }

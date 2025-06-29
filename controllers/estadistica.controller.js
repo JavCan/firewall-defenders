@@ -14,7 +14,6 @@ const getEstadistica = async (req, res) => {
 // Obtener estadísticas por tipo
 const getEstadisticaPorTipo = async (req, res) => {
   try {
-    // CORRECCIÓN: Usar idTipo en lugar de id en los parámetros de ruta si así está definida la ruta
     // Asumiendo que la ruta es /api/estadistica/tipo/:idTipo
     const { idTipo } = req.params;
     const tipoIdNumerico = parseInt(idTipo, 10);
@@ -58,7 +57,6 @@ const getEstadisticaPorTipo = async (req, res) => {
   }
 };
 
-// Helper function to get all tipos de estadistica
 // Obtener todos los tipos de estadísticas
 const getTiposEstadistica = async (req, res) => {
   try {
@@ -69,17 +67,29 @@ const getTiposEstadistica = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener los tipos de estadística' });
   }
 };
+
 // Obtener estadísticas de un usuario
-// Obtener las ÚLTIMAS estadísticas de cada tipo para un usuario
 const getEstadisticaUsuario = async (req, res) => {
   try {
+    // ---- INICIO DEBUGGING ----
+    console.log('[getEstadisticaUsuario] Inicio de la función.');
+    console.log('[getEstadisticaUsuario] req.params completos:', req.params);
+    // ---- FIN DEBUGGING ----
+
     const { idUsuario } = req.params;
+
+    // ---- INICIO DEBUGGING ----
+    console.log(`[getEstadisticaUsuario] Valor de idUsuario después de desestructurar: '${idUsuario}', Tipo: ${typeof idUsuario}`);
+    // ---- FIN DEBUGGING ----
+
     const usuarioIdNumerico = parseInt(idUsuario, 10);
     if (isNaN(usuarioIdNumerico)) {
+        // ---- INICIO DEBUGGING ----
+        console.error(`[getEstadisticaUsuario] Error: parseInt falló. idUsuario era: '${idUsuario}'. Resultado de parseInt: ${usuarioIdNumerico}`);
+        // ---- FIN DEBUGGING ----
         return res.status(400).json({ error: 'idUsuario debe ser un número.' });
     }
 
-    // MODIFICADO: Consulta para obtener la entrada con el MÁXIMO valor_INT para cada tipo de estadística de este usuario
     const query = `
       SELECT e.*
       FROM estadistica e
@@ -94,34 +104,19 @@ const getEstadisticaUsuario = async (req, res) => {
       WHERE e.idUsuario = ?
       ORDER BY e.idTipo ASC; 
     `;
-    // Nota: Si hay múltiples entradas con el mismo valor_INT máximo para un tipo,
-    // esta consulta podría devolverlas todas. Si solo quieres una (por ejemplo, la más reciente
-    // entre las que tienen el valor máximo), la consulta necesitaría ser más compleja,
-    // posiblemente usando ROW_NUMBER() si tu versión de MySQL lo soporta, o una subconsulta adicional.
-    // Por ahora, esto devolverá todas las entradas que empaten en el valor máximo.
 
     const [rows] = await pool.query(query, [usuarioIdNumerico, usuarioIdNumerico]);
 
-    // Opcional: Si quieres asegurarte de que solo devuelves UNA fila por idTipo,
-    // incluso si hay empates en valor_INT, puedes procesar 'rows' aquí.
-    // Podrías crear un Map para quedarte con la primera que encuentres por idTipo.
+    // Ahora, 'rows' contiene las estadísticas con el valor_INT más alto para cada tipo.
     const estadisticasUnicas = new Map();
     rows.forEach(row => {
         if (!estadisticasUnicas.has(row.idTipo)) {
             estadisticasUnicas.set(row.idTipo, row);
         }
-        // Si quieres la más reciente en caso de empate, podrías comparar fechas aquí:
-        // else {
-        //     const existente = estadisticasUnicas.get(row.idTipo);
-        //     if (new Date(row.fecha_hora) > new Date(existente.fecha_hora)) {
-        //         estadisticasUnicas.set(row.idTipo, row);
-        //     }
-        // }
     });
 
     // Convertir el Map de nuevo a un array para la respuesta JSON
     const resultadoFinal = Array.from(estadisticasUnicas.values());
-
 
     res.json(resultadoFinal); // Devolver el array de las estadísticas con máximo valor_INT por tipo
 
@@ -143,7 +138,6 @@ const getEstadisticaUsuarioPorTipo = async (req, res) => {
     }
 
     const [rows] = await pool.query(
-      // MODIFICADO: Añadir ORDER BY y LIMIT 1
       `SELECT * 
        FROM estadistica 
        WHERE idUsuario = ? AND idTipo = ? 
@@ -153,17 +147,10 @@ const getEstadisticaUsuarioPorTipo = async (req, res) => {
     );
 
     if (rows.length === 0) {
-      // MODIFICADO: Devolver un objeto indicando que no hay datos, en lugar de 404
-      // Esto permite al frontend manejar la ausencia de datos específicos.
-      // Podríamos devolver un valor predeterminado o null según la necesidad del frontend.
-      // Por ejemplo, para niveles completados (idTipo 2), podríamos devolver 0.
       let defaultValue = null;
       if (tipoIdNumerico === 2) { // Asumiendo que 2 es 'Niveles Completados'
           defaultValue = { valor_INT: 0 }; // O la estructura que espere el frontend
       }
-      // Si necesitas devolver algo genérico o dejar que el frontend decida:
-      // return res.status(200).json({ mensaje: 'No se encontraron estadísticas para este usuario y tipo', datos: null });
-      // Por ahora, devolvemos un objeto con valor_INT 0 para el tipo 2, y null para otros.
        return res.status(200).json(defaultValue);
     }
 
@@ -174,17 +161,27 @@ const getEstadisticaUsuarioPorTipo = async (req, res) => {
   }
 };
 
-
-
 // Obtener tiempo de juego de un usuario
 const getTiempoJuegoUsuario = async (req, res) => {
   try {
+    // ---- INICIO DEBUGGING ----
+    console.log('[getTiempoJuegoUsuario] Inicio de la función.');
+    console.log('[getTiempoJuegoUsuario] req.params completos:', req.params);
+    // ---- FIN DEBUGGING ----
+
     const { idUsuario } = req.params;
+
+    // ---- INICIO DEBUGGING ----
+    console.log(`[getTiempoJuegoUsuario] Valor de idUsuario después de desestructurar: '${idUsuario}', Tipo: ${typeof idUsuario}`);
+    // ---- FIN DEBUGGING ----
+
     const usuarioIdNumerico = parseInt(idUsuario, 10);
      if (isNaN(usuarioIdNumerico)) {
+        // ---- INICIO DEBUGGING ----
+        console.error(`[getTiempoJuegoUsuario] Error: parseInt falló. idUsuario era: '${idUsuario}'. Resultado de parseInt: ${usuarioIdNumerico}`);
+        // ---- FIN DEBUGGING ----
         return res.status(400).json({ error: 'idUsuario debe ser un número.' });
     }
-
     const [rows] = await pool.query(
       // MODIFICADO: Añadir ORDER BY y LIMIT 1
       `SELECT e.valor_TIME 
@@ -320,8 +317,6 @@ const upsertEstadistica = async (req, res) => {
     res.status(500).json({ error: 'Error interno al guardar la estadística.' });
   }
 };
-// --------------------------------------------------------------------
-
 
 // ------- NUEVA FUNCIÓN: Obtener Tiempo de Juego Semanal (para MonitoringCard1) -------
 const getTiempoJuegoSemanalUsuario = async (req, res) => {
@@ -384,8 +379,6 @@ const getTiempoJuegoSemanalUsuario = async (req, res) => {
     res.status(500).json({ error: 'Error interno al obtener el tiempo de juego semanal.' });
   }
 };
-// --------------------------------------------------------------------
-
 
 // ------- NUEVA FUNCIÓN: Obtener Monedas Gastadas por Nivel (para MonitoringCard2) -------
 const getMonedasGastadasPorNivelUsuario = async (req, res) => {
@@ -399,11 +392,6 @@ const getMonedasGastadasPorNivelUsuario = async (req, res) => {
   console.log(`[Monedas Nivel] Solicitud para usuario ID: ${idUsuario}`);
 
   try {
-    // --- CORRECCIÓN: Ya no necesitamos determinar maxLevel dinámicamente ---
-    // El frontend espera explícitamente 13 niveles.
-
-    // Paso 1: Consultar las monedas gastadas por nivel para el usuario
-    // --- CORRECCIÓN: Cambiar alias SQL a totalMonedasGastadas ---
     const sql = `
       SELECT
           idNivel,
@@ -460,9 +448,6 @@ const getMonedasGastadasPorNivelUsuario = async (req, res) => {
 
   } catch (error) {
     console.error(`[Monedas Nivel] Error al obtener monedas gastadas por nivel para usuario ID ${idUsuario}:`, error);
-    // --- CORRECCIÓN: Devolver array vacío en caso de error grave ---
-    // O podrías devolver un array de 13 niveles con 0 monedas si prefieres que el gráfico no muestre error
-    // Por consistencia con la petición original, devolvemos array vacío en error.
     res.status(500).json([]); // Devolver array vacío en lugar de objeto de error
   }
 };
@@ -505,9 +490,6 @@ const registrarGastoMonedasPorNivel = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor al registrar el gasto.' });
   }
 };
-// --- FIN NUEVA FUNCIÓN ---
-
-// ------- NUEVAS FUNCIONES: Manejo de Sesiones de Juego -------
 
 // Iniciar una nueva sesión de juego
 const iniciarSesionJuego = async (req, res) => {
@@ -582,8 +564,6 @@ const finalizarSesionJuego = async (req, res) => {
   }
 };
 
-// ... (importaciones y otras funciones) ...
-
 const registrarUsoSticker = async (req, res) => {
   try {
     const idUsuario = req.user?.userId; // Asumiendo que verifyJWT añade 'user' al request
@@ -610,8 +590,6 @@ const registrarUsoSticker = async (req, res) => {
   }
 };
 
-// ... (importaciones y otras funciones) ...
-
 const getUsoStickersUsuario = async (req, res) => {
   try {
     const idUsuario = req.user?.userId;
@@ -635,7 +613,6 @@ const getUsoStickersUsuario = async (req, res) => {
   }
 };
 
-// --- Exportar TODO ---
 export {
   getEstadistica,
   getEstadisticaPorTipo,
@@ -644,11 +621,11 @@ export {
   getEstadisticaUsuarioPorTipo,
   getTiempoJuegoUsuario,
   upsertEstadistica,
-  getTiempoJuegoSemanalUsuario, // Ya existente
-  getMonedasGastadasPorNivelUsuario, // Ya existente
-  registrarGastoMonedasPorNivel, // Ya existente
-  iniciarSesionJuego, // <-- Añadido
+  getTiempoJuegoSemanalUsuario, 
+  getMonedasGastadasPorNivelUsuario, 
+  registrarGastoMonedasPorNivel, 
+  iniciarSesionJuego, 
   finalizarSesionJuego,
   registrarUsoSticker,
-  getUsoStickersUsuario // <-- Añadido
+  getUsoStickersUsuario 
 };

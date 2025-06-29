@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
-// No necesitas importar express aquí si solo exportas la función middleware
 
-// Asegúrate de tener KEYPHRASE en tus variables de entorno (.env)
 const JWT_SECRET = process.env.KEYPHRASE;
 
 const verifyJWT = (req, res, next) => {
@@ -42,4 +40,3 @@ const verifyJWT = (req, res, next) => {
 
 // Exportamos la función middleware directamente para usarla en rutas específicas
 export { verifyJWT };
-// Ya no exportamos 'middleware' como un router
